@@ -19,6 +19,7 @@ import Conversation from "./pages/Host/Conversation";
 import Guests from "./pages/Host/Guests";
 import BlockedNumbers from "./pages/Host/BlockedNumbers";
 import HostProfile from "./pages/Host/Profile";
+import Withdrawals from "./pages/Host/Withdrawals";
 
 // Admin Pages
 import AdminDashboard from "./pages/Admin/Dashboard";
@@ -30,6 +31,13 @@ import Settings from "./pages/Admin/Settings";
 import CreateAdmin from "./pages/Admin/CreateAdmin";
 import HostDetail from "./pages/Admin/HostDetail";
 import FeedbackList from "./pages/Admin/FeedbackList";
+import WithdrawalsPage from "./pages/Admin/WithdrawalsPage";
+import CommissionRulesPage from "./pages/Admin/CommissionRulesPage";
+
+// Financial Host Pages
+import HostWalletPage from "./pages/Host/HostWalletPage";
+import HostBookingsPage from "./pages/Host/HostBookingsPage";
+
 
 import { ScrollToTop } from "./components/common/ScrollToTop";
 
@@ -59,6 +67,9 @@ export default function App() {
             <Route path="/host/guests" element={<Guests />} />
             <Route path="/host/blocked-numbers" element={<BlockedNumbers />} />
             <Route path="/host/profile" element={<HostProfile />} />
+            <Route path="/host/wallet" element={<HostWalletPage />} />
+            <Route path="/host/bookings" element={<HostBookingsPage />} />
+            <Route path="/host/withdrawals" element={<Withdrawals />} />
           </Route>
 
           {/* Admin Dashboard Routes */}
@@ -78,6 +89,8 @@ export default function App() {
             <Route path="/admin/hosts/:hostId" element={<HostDetail />} />
             <Route path="/admin/create-admin" element={<CreateAdmin />} />
             <Route path="/admin/feedback" element={<FeedbackList />} />
+            <Route path="/admin/withdrawals" element={<WithdrawalsPage />} />
+            <Route path="/admin/commission-rules" element={<CommissionRulesPage />} />
           </Route>
 
           {/* Fallback Route */}
@@ -87,26 +100,7 @@ export default function App() {
       <Toaster
         position="top-right"
         toastOptions={{
-          duration: 4000,
-          style: {
-            background: '#363636',
-            color: '#fff',
-            zIndex:9999999999999
-          },
-          success: {
-            duration: 3000,
-            iconTheme: {
-              primary: '#10B981',
-              secondary: '#fff',
-            },
-          },
-          error: {
-            duration: 4000,
-            iconTheme: {
-              primary: '#EF4444',
-              secondary: '#fff',
-            },
-          },
+          style: { zIndex: 9999 }
         }}
       />
     </SocketProvider>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import PageMeta from "../../components/common/PageMeta";
-import { adminService } from "../../services/adminService";
+import { whatsappService } from "../../services/whatsapp.service";
 import type { Session } from "../../types";
 import { Modal } from "../../components/ui/modal";
 import toast from "react-hot-toast";
@@ -20,12 +20,10 @@ export default function Sessions() {
   const loadSessions = async () => {
     setIsLoading(true);
     try {
-      const response = await adminService.getAllSessions();
-      if (response.success) {
-        setSessions(response.data.sessions);
-        setTotalActive(response.data.totalActive);
-        setTotalStored(response.data.totalStored);
-      }
+      const data = await whatsappService.getAllSessions();
+      setSessions(data.sessions);
+      setTotalActive(data.totalActive);
+      setTotalStored(data.totalStored);
     } catch (error) {
       console.error("Failed to load sessions:", error);
     } finally {
@@ -35,67 +33,39 @@ export default function Sessions() {
 
   const handleViewDetails = async (sessionId: string) => {
     try {
-      const response = await adminService.getSessionDetails(sessionId);
-      if (response.success) {
-        setSelectedSession(response.data);
-        setIsDetailModalOpen(true);
-      }
+      const data = await whatsappService.getSessionStatus(sessionId, true);
+      setSelectedSession(data as any); // Type cast if needed or update Session type
+      setIsDetailModalOpen(true);
     } catch (error) {
       console.error("Failed to load session details:", error);
+      toast.error("Failed to load session details");
     }
   };
 
   const handleRestart = async (sessionId: string) => {
     if (!confirm("Are you sure you want to restart this session?")) return;
     try {
-      const response = await adminService.restartSession(sessionId);
-      if (response.success) {
-        toast.success("Session restarted");
-        loadSessions();
-      }
+      await whatsappService.restartSession(sessionId);
+      toast.success("Session restart triggered");
+      loadSessions();
     } catch (error) {
       console.error("Failed to restart session:", error);
     }
   };
 
-  const handleLogout = async (sessionId: string) => {
-    if (!confirm("Are you sure you want to logout this session? User will need to scan QR code again.")) return;
-    try {
-      const response = await adminService.logoutSession(sessionId);
-      if (response.success) {
-        toast.success("Session logged out");
-        loadSessions();
-      }
-    } catch (error) {
-      console.error("Failed to logout session:", error);
-    }
-  };
-
   const handleDestroy = async (sessionId: string) => {
-    if (!confirm("Are you sure you want to destroy this session? This will remove all session data.")) return;
+    if (!confirm("Are you sure you want to disconnect this session?")) return;
     try {
-      const response = await adminService.destroySession(sessionId);
-      if (response.success) {
-        toast.success("Session destroyed");
-        loadSessions();
-      }
+      await whatsappService.disconnectSession(sessionId, true);
+      toast.success("Session disconnected");
+      loadSessions();
     } catch (error) {
-      console.error("Failed to destroy session:", error);
+      console.error("Failed to disconnect session:", error);
     }
   };
 
   const handleDestroyAll = async () => {
-    if (!confirm("Are you sure you want to destroy ALL sessions? This cannot be undone!")) return;
-    if (!confirm("This will disconnect all WhatsApp sessions. Type 'yes' to confirm.")) return;
-    try {
-      const response = await adminService.destroyAllSessions();
-      if (response.success) {
-        toast.success("All sessions destroyed");
-        loadSessions();
-      }
-    } catch (error) {
-      console.error("Failed to destroy all sessions:", error);
-    }
+    toast.error("Bulk destroy not implemented in new API yet.");
   };
 
   const getStatusBadge = (session: Session) => {
@@ -242,12 +212,6 @@ export default function Sessions() {
                                 className="text-warning-500 hover:text-warning-600 text-sm"
                               >
                                 Restart
-                              </button>
-                              <button
-                                onClick={() => handleLogout(session.sessionId)}
-                                className="text-gray-500 hover:text-gray-700 text-sm"
-                              >
-                                Logout
                               </button>
                             </>
                           )}

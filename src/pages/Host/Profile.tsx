@@ -37,8 +37,11 @@ export default function Profile() {
       if (response.success) {
         updateUser(response.data);
         toast.success("Profile updated successfully");
+      } else {
+        toast.error(response.message || "Failed to update profile");
       }
-    } catch (error) {
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to update profile");
       console.error("Failed to update profile:", error);
     } finally {
       setIsUpdatingProfile(false);
@@ -62,7 +65,6 @@ export default function Profile() {
         passwordForm.reset();
       }
     } catch (error) {
-      console.error("Failed to change password:", error);
     } finally {
       setIsChangingPassword(false);
     }
@@ -233,4 +235,3 @@ export default function Profile() {
     </>
   );
 }
-

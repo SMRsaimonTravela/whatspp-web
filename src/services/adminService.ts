@@ -1,6 +1,6 @@
 import api from './api';
-import type { User, BlockedNumber, Session, Setting, Pagination, HostsResponse, HostDetailResponse, GuestsResponse, MessagesResponse, ConversationResponse, HostsQueryParams, GuestsQueryParams, MessagesQueryParams } from '../types';
-import type {IAdminFeedbacksResponse } from '../types';
+import type { User, BlockedNumber, Setting, Pagination, HostsResponse, HostDetailResponse, GuestsResponse, MessagesResponse, ConversationResponse, HostsQueryParams, GuestsQueryParams, MessagesQueryParams } from '../types';
+import type { IAdminFeedbacksResponse } from '../types';
 
 
 export const adminService = {
@@ -72,54 +72,7 @@ export const adminService = {
     return response.data;
   },
 
-  // Session Management
-  getActiveSessions: async (): Promise<{ success: boolean; data: { count: number; sessions: Session[] } }> => {
-    const response = await api.get('/admin/sessions');
-    return response.data;
-  },
-
-  getStoredSessions: async (): Promise<{ success: boolean; data: { count: number; sessions: Session[] } }> => {
-    const response = await api.get('/admin/sessions/stored');
-    return response.data;
-  },
-
-  getAllSessions: async (): Promise<{
-    success: boolean;
-    data: { totalActive: number; totalStored: number; sessions: Session[] };
-  }> => {
-    const response = await api.get('/admin/sessions/all');
-    return response.data;
-  },
-
-  getSessionDetails: async (sessionId: string): Promise<{ success: boolean; data: Session & { user?: User } }> => {
-    const response = await api.get(`/admin/sessions/${sessionId}`);
-    return response.data;
-  },
-
-  destroySession: async (sessionId: string): Promise<{ success: boolean; message: string }> => {
-    const response = await api.delete(`/admin/sessions/${sessionId}`);
-    return response.data;
-  },
-
-  removeStoredSession: async (sessionId: string): Promise<{ success: boolean; message: string }> => {
-    const response = await api.delete(`/admin/sessions/${sessionId}/stored`);
-    return response.data;
-  },
-
-  destroyAllSessions: async (storedOnly?: boolean): Promise<{ success: boolean; message: string }> => {
-    const response = await api.delete('/admin/sessions', { params: { storedOnly } });
-    return response.data;
-  },
-
-  restartSession: async (sessionId: string): Promise<{ success: boolean; message: string }> => {
-    const response = await api.post(`/admin/sessions/${sessionId}/restart`);
-    return response.data;
-  },
-
-  logoutSession: async (sessionId: string): Promise<{ success: boolean; message: string }> => {
-    const response = await api.post(`/admin/sessions/${sessionId}/logout`);
-    return response.data;
-  },
+  // Session Management (Moved to whatsappService)
 
   // Settings
   getSettings: async (category?: string): Promise<{ success: boolean; data: Setting[] }> => {

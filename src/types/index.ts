@@ -1,5 +1,5 @@
 // User Types
-export interface User {
+export interface IUser {
   id: string;
   name: string;
   email: string;
@@ -17,7 +17,7 @@ export interface AuthResponse {
   success: boolean;
   data: {
     token: string;
-    user: User;
+    user: IUser;
   };
 }
 
@@ -90,7 +90,7 @@ export interface BlockedNumber {
 // Session Types
 export interface Session {
   sessionId: string;
-  status: 'initializing' | 'pending' | 'ready' | 'disconnected' | 'stored';
+  status: 'initializing' | 'pending' | 'ready' | 'disconnected' | 'stored' | 'authenticated' | 'auth_failure';
   connected?: boolean;
   hasQR?: boolean;
   isActive?: boolean;

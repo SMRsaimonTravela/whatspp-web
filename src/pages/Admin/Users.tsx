@@ -4,6 +4,9 @@ import PageMeta from "../../components/common/PageMeta";
 import { adminService } from "../../services/adminService";
 import type { User, Pagination } from "../../types";
 import { Modal } from "../../components/ui/modal";
+import { Drawer } from "../../components/ui/drawer";
+import { financeService } from "../../services/financeService";
+import { IHostFinancialDetails } from "../../types/finance";
 import toast from "react-hot-toast";
 
 export default function Users() {
@@ -26,6 +29,11 @@ export default function Users() {
     password: "",
     userType: "host" as "host" | "admin",
   });
+
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [selectedHostFinance, setSelectedHostFinance] = useState<IHostFinancialDetails | null>(null);
+  const [isDetailsLoading, setIsDetailsLoading] = useState(false);
+  const [newHostId, setNewHostId] = useState<string>("");
 
   const navigate = useNavigate();
 
@@ -125,6 +133,40 @@ export default function Users() {
       }
     } catch (error) {
       console.error("Failed to create user:", error);
+    }
+  };
+
+  const handleViewHostDetails = async (user: User) => {
+    setIsDetailsLoading(true);
+    setIsDrawerOpen(true);
+    setSelectedHostFinance(null);
+    try {
+      const details = await financeService.getAdminHostDetails(user.id);
+      setSelectedHostFinance(details);
+      setNewHostId(details.host.hostId?.toString() || "");
+    } catch (error) {
+      console.error("Failed to load host finance details:", error);
+      toast.error("Failed to load financial details");
+    } finally {
+      setIsDetailsLoading(false);
+    }
+  };
+
+  const handleUpdateHostId = async () => {
+    if (!selectedHostFinance) return;
+    const hostId = parseInt(newHostId);
+    if (isNaN(hostId)) {
+      toast.error("Please enter a valid Numeric ID");
+      return;
+    }
+    try {
+      await financeService.updateHostId(selectedHostFinance.host.id, hostId);
+      toast.success("Host ID updated successfully");
+      // Refresh details
+      const details = await financeService.getAdminHostDetails(selectedHostFinance.host.id);
+      setSelectedHostFinance(details);
+    } catch (error) {
+      console.error("Failed to update host ID:", error);
     }
   };
 
@@ -243,10 +285,10 @@ export default function Users() {
                         <div>
                           {user.userType === 'host' ? (
                             <button
-                              onClick={() => navigate(`/admin/hosts/${user.id}`)}
-                              className="text-left hover:text-brand-500"
+                              onClick={() => handleViewHostDetails(user)}
+                              className="text-left group"
                             >
-                              <p className="text-sm font-medium text-gray-800 dark:text-white">{user.name}</p>
+                              <p className="text-sm font-medium text-gray-800 dark:text-white group-hover:text-brand-500 transition-colors">{user.name}</p>
                               {user.businessName && (
                                 <p className="text-xs text-gray-500 dark:text-gray-400">{user.businessName}</p>
                               )}
@@ -441,6 +483,124 @@ export default function Users() {
           </button>
         </div>
       </Modal>
+
+      {/* Host Details Drawer */}
+      <Drawer
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        title="Host Financial Overview"
+        className="max-w-4xl mx-auto"
+      >
+        {isDetailsLoading ? (
+          <div className="py-20 flex flex-col items-center justify-center gap-4">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-brand-500"></div>
+            <p className="text-gray-500 font-medium">Fetching host data...</p>
+          </div>
+        ) : selectedHostFinance ? (
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            {/* Host Info Header */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-gray-50 dark:bg-gray-700/50 p-6 rounded-2xl border border-gray-100 dark:border-gray-600">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-2xl bg-brand-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-brand-500/20">
+                  {selectedHostFinance.host.name[0].toUpperCase()}
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">{selectedHostFinance.host.name}</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{selectedHostFinance.host.email}</p>
+                  <p className="text-xs font-mono text-brand-600 dark:text-brand-400 mt-1">Host ID: {selectedHostFinance.host.hostId || 'Not Linked'}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => navigate(`/admin/hosts/${selectedHostFinance.host.id}`)}
+                  className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl text-sm font-semibold hover:bg-gray-50 transition-all flex items-center gap-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  Full View
+                </button>
+                <a
+                  href={`https://wa.me/${selectedHostFinance.host.whatsappNumber}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-4 py-2 bg-[#25D366] text-white rounded-xl text-sm font-semibold hover:bg-[#20ba59] transition-all flex items-center gap-2"
+                >
+                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+                  </svg>
+                  WhatsApp
+                </a>
+              </div>
+            </div>
+
+            {/* Stats Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 group hover:border-brand-500/30 transition-all">
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Available Balance</p>
+                <div className="text-3xl font-black text-gray-900 dark:text-white">
+                  ৳{selectedHostFinance.wallet.balance.toLocaleString()}
+                </div>
+                <div className="mt-3 flex items-center text-xs text-success-600 font-bold">
+                  <span className="w-2 h-2 rounded-full bg-success-600 mr-2 animate-pulse"></span>
+                  Ready to withdraw
+                </div>
+              </div>
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 group hover:border-brand-500/30 transition-all">
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Total Bookings</p>
+                <div className="text-3xl font-black text-gray-900 dark:text-white">
+                  {selectedHostFinance.bookings.total}
+                </div>
+                <div className="mt-3 text-xs text-gray-500">Global bookings across all units</div>
+              </div>
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 group hover:border-brand-500/30 transition-all">
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Total Paid</p>
+                <div className="text-3xl font-black text-brand-600">
+                  ৳{selectedHostFinance.wallet.totalPaid.toLocaleString()}
+                </div>
+                <div className="mt-3 text-xs text-gray-500">Successfully settled amount</div>
+              </div>
+            </div>
+
+            {/* Host ID Linking Section */}
+            <div className="p-6 bg-brand-50 dark:bg-brand-500/5 rounded-2xl border border-brand-100 dark:border-brand-500/20">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div className="flex-1">
+                  <h4 className="font-bold text-brand-900 dark:text-brand-300">Link External Host ID</h4>
+                  <p className="text-xs text-brand-700/70 dark:text-brand-400/70 mt-1">Connect this user to their physical Travela Host database entry</p>
+                </div>
+                <div className="flex items-center gap-2 w-full md:w-auto">
+                  <input
+                    type="number"
+                    value={newHostId}
+                    onChange={(e) => setNewHostId(e.target.value)}
+                    placeholder="Enter Numeric ID"
+                    className="flex-1 md:w-40 h-11 rounded-xl border-brand-200 dark:border-brand-800 bg-white dark:bg-gray-900 px-4 text-sm font-bold text-brand-900 dark:text-brand-100 focus:ring-2 focus:ring-brand-500 outline-none"
+                  />
+                  <button
+                    onClick={handleUpdateHostId}
+                    className="px-6 h-11 bg-brand-600 text-white rounded-xl text-sm font-bold hover:bg-brand-700 transition-all shadow-lg shadow-brand-600/20 active:scale-95 whitespace-nowrap"
+                  >
+                    Update ID
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-center pb-6">
+              <button
+                onClick={() => setIsDrawerOpen(false)}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-sm font-medium transition-colors"
+              >
+                Close Quick View
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="py-20 text-center text-gray-500">No data available</div>
+        )}
+      </Drawer>
     </>
   );
 }

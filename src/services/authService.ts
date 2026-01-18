@@ -41,12 +41,12 @@ export const authService = {
   },
 
   updateProfile: async (payload: UpdateProfilePayload): Promise<{ success: boolean; data: User }> => {
-    const response = await api.put('/auth/profile', payload);
+    const response = await api.patch('/auth/profile', payload);
     return response.data;
   },
 
   changePassword: async (payload: ChangePasswordPayload): Promise<{ success: boolean; message: string }> => {
-    const response = await api.put('/auth/change-password', payload);
+    const response = await api.post('/auth/change-password', payload);
     return response.data;
   },
 };

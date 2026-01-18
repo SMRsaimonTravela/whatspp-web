@@ -1,29 +1,8 @@
 import api from './api';
-import type { Message, MessageStats, Guest, BlockedNumber, Session, SessionQR, Pagination } from '../types';
+import type { Message, MessageStats, Guest, BlockedNumber, Pagination } from '../types';
 
 // Session APIs
 export const hostService = {
-  // Session Management
-  initializeSession: async (): Promise<{ success: boolean; message: string; data: { sessionId: string; webhookUrl: string } }> => {
-    const response = await api.post('/host/session');
-    return response.data;
-  },
-
-  getSessionStatus: async (): Promise<{ success: boolean; data: Session }> => {
-    const response = await api.get('/host/session/status');
-    return response.data;
-  },
-
-  getQRCode: async (): Promise<{ success: boolean; data: SessionQR }> => {
-    const response = await api.get('/host/session/qr');
-    return response.data;
-  },
-
-  getQRCodeImageUrl: (): string => {
-    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-    return `${baseUrl}/host/session/qr-image`;
-  },
-
   // AI Toggle
   getAIStatus: async (): Promise<{ success: boolean; data: { aiAutoReplyEnabled: boolean } }> => {
     const response = await api.get('/host/ai-status');
