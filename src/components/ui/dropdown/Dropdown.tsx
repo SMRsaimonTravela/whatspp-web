@@ -6,6 +6,7 @@ interface DropdownProps {
   onClose: () => void;
   children: React.ReactNode;
   className?: string;
+  dropUp?: boolean; // New prop
 }
 
 export const Dropdown: React.FC<DropdownProps> = ({
@@ -13,6 +14,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
   onClose,
   children,
   className = "",
+  dropUp = false,
 }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -38,7 +40,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
   return (
     <div
       ref={dropdownRef}
-      className={`absolute z-40  right-0 mt-2  rounded-xl border border-gray-200 bg-white  shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark ${className}`}
+      className={`absolute z-40 right-0 ${dropUp ? 'bottom-full mb-2' : 'mt-2'} rounded-xl border border-gray-200 bg-white shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark ${className}`}
     >
       {children}
     </div>

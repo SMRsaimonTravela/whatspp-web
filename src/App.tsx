@@ -40,6 +40,7 @@ import HostBookingsPage from "./pages/Host/HostBookingsPage";
 
 
 import { ScrollToTop } from "./components/common/ScrollToTop";
+import HostUsersPage from "./pages/Admin/HostUsersPage.tsx";
 
 export default function App() {
   return (
@@ -70,6 +71,7 @@ export default function App() {
             <Route path="/host/wallet" element={<HostWalletPage />} />
             <Route path="/host/bookings" element={<HostBookingsPage />} />
             <Route path="/host/withdrawals" element={<Withdrawals />} />
+
           </Route>
 
           {/* Admin Dashboard Routes */}
@@ -83,6 +85,7 @@ export default function App() {
             <Route index path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/users" element={<Users />} />
             <Route path="/admin/users/pending" element={<PendingApprovals />} />
+            <Route path="/admin/host-users" element={<HostUsersPage/>} />
             <Route path="/admin/block-requests" element={<BlockRequests />} />
             <Route path="/admin/sessions" element={<Sessions />} />
             <Route path="/admin/settings" element={<Settings />} />

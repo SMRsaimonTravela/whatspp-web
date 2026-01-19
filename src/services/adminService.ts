@@ -1,6 +1,7 @@
 import api from './api';
-import type { User, BlockedNumber, Setting, Pagination, HostsResponse, HostDetailResponse, GuestsResponse, MessagesResponse, ConversationResponse, HostsQueryParams, GuestsQueryParams, MessagesQueryParams } from '../types';
+import type { IUser, BlockedNumber, Setting, Pagination, HostsResponse, HostDetailResponse, GuestsResponse, MessagesResponse, ConversationResponse, HostsQueryParams, GuestsQueryParams, MessagesQueryParams } from '../types';
 import type { IAdminFeedbacksResponse } from '../types';
+import type { IHostUser } from "../types/users.type"; // Import IHostUser type
 
 
 export const adminService = {
@@ -11,12 +12,12 @@ export const adminService = {
     status?: string;
     userType?: string;
     search?: string;
-  }): Promise<{ success: boolean; data: { users: User[]; pagination: Pagination } }> => {
+  }): Promise<{ success: boolean; data: { users: IUser[]; pagination: Pagination } }> => {
     const response = await api.get('/users', { params });
     return response.data;
   },
 
-  getPendingUsers: async (): Promise<{ success: boolean; data: User[] }> => {
+  getPendingUsers: async (): Promise<{ success: boolean; data: IUser[] }> => {
     const response = await api.get('/users/pending');
     return response.data;
   },
@@ -28,12 +29,12 @@ export const adminService = {
     whatsappNumber?: string;
     password: string;
     userType: 'host' | 'admin';
-  }): Promise<{ success: boolean; data: User }> => {
+  }): Promise<{ success: boolean; data: IUser }> => {
     const response = await api.post('/users', data);
     return response.data;
   },
 
-  createAdmin: async (data: { name?: string; email: string; password: string }): Promise<{ success: boolean; data: User }> => {
+  createAdmin: async (data: { name?: string; email: string; password: string }): Promise<{ success: boolean; data: IUser }> => {
     const response = await api.post('/users/admin', data);
     return response.data;
   },
@@ -134,6 +135,11 @@ export const adminService = {
 
   getAnalytics: async (): Promise<import('../types').IAnalyticsApiResponse> => {
     const response = await api.get('/admin/analytics');
+    return response.data;
+  },
+
+  getHostUsers: async (): Promise<{ success: boolean; data: IHostUser[] }> => {
+    const response = await api.get('/admin/users/hosts');
     return response.data;
   },
 };

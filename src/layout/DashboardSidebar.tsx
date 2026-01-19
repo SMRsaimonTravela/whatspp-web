@@ -109,6 +109,10 @@ const adminNavItems: NavItem[] = [
     subItems: [
       { name: "All Users", path: "/admin/users" },
       { name: "Pending Approvals", path: "/admin/users/pending" },
+      {
+        name: "Host Users",
+        path: "/admin/host-users",
+      },
     ],
   },
   {
@@ -170,7 +174,7 @@ const adminNavItems: NavItem[] = [
     icon: <InfoIcon />,
     name: "Feedback",
     path: "/admin/feedback",
-  },
+  }
 ];
 
 interface AppSidebarProps {

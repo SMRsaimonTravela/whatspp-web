@@ -8,7 +8,7 @@ import {
     IWallet,
     IWalletHistoryResponse, IWithdrawalsResponse
 } from '../types/finance';
-import { IPagination, FilterDefinition, APIFilters } from '../types/common';
+import { IPagination, APIFilters } from '../types/common';
 
 // --- HOST APIs ---
 
@@ -94,22 +94,22 @@ export const getAdminBookings = async (options?: { hostId?: number; bookingId?: 
 
 /** Get all withdrawal requests by status */
 export const getAdminWithdrawals = async (status?: string, page = 1) => {
-    const res = await api.get('/admin/withdrawals', { params: { status, page } });
-    return res.data.data as { requests: IWithdrawalRequest[]; total: number };
+    const res = await api.get('/admin/wallet/withdrawals', { params: { status, page } });
+    return res.data;
 };
 
 export const approveWithdrawal = async (id: string) => {
-    const res = await api.post(`/admin/withdrawals/${id}/approve`);
+    const res = await api.patch(`/admin/withdrawals/${id}/approve`);
     return res.data.data;
 };
 
 export const rejectWithdrawal = async (id: string, reason: string) => {
-    const res = await api.post(`/admin/withdrawals/${id}/reject`, { reason });
+    const res = await api.patch(`/admin/withdrawals/${id}/reject`, { reason });
     return res.data.data;
 };
 
 export const completeWithdrawal = async (id: string, transactionId: string) => {
-    const res = await api.post(`/admin/withdrawals/${id}/complete`, { transactionId });
+    const res = await api.patch(`/admin/withdrawals/${id}/complete`, { transactionId });
     return res.data.data;
 };
 
@@ -131,6 +131,24 @@ export const updateHostId = async (userId: string, hostId: number) => {
     return res.data.data;
 };
 
+/** Update a commission rule */
+export const updateCommissionRule = async (id: string, payload: Partial<ICommissionRule>) => {
+    const res = await api.patch(`/admin/commission-rules/${id}`, payload);
+    return res.data;
+};
+
+/** Update commission rule status */
+export const updateCommissionRuleStatus = async (id: string, status: string) => {
+    const res = await api.patch(`/admin/commission-rules/${id}/status`, { status });
+    return res.data;
+};
+
+/** Assign users to a commission rule */
+export const assignCommissionRuleUsers = async (id: string, userIds: string[]) => {
+    const res = await api.post(`/admin/commission-rules/${id}/assign`, { userIds });
+    return res.data;
+};
+
 export const financeService = {
     getHostWallet,
     getHostWalletHistory,
@@ -146,5 +164,8 @@ export const financeService = {
     getAdminHostDetails,
     getAdminHostTransactions,
     updateHostId,
-    getWithdrawals
+    getWithdrawals,
+    updateCommissionRule,
+    updateCommissionRuleStatus,
+    assignCommissionRuleUsers
 };

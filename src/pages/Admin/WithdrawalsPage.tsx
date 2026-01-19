@@ -5,6 +5,8 @@ import { IWithdrawalRequest, WithdrawalStatus } from "../../types/finance";
 import { Table, TableHeader, TableBody, TableRow, TableCell } from "../../components/ui/table";
 import { Modal } from "../../components/ui/modal";
 import toast from "react-hot-toast";
+import { Dropdown } from '../../components/ui/dropdown/Dropdown';
+import { DropdownItem } from '../../components/ui/dropdown/DropdownItem';
 
 export default function WithdrawalsPage() {
     const [requests, setRequests] = useState<IWithdrawalRequest[]>([]);
@@ -19,6 +21,7 @@ export default function WithdrawalsPage() {
     const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
     const [transactionId, setTransactionId] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
 
     useEffect(() => {
         loadRequests();
@@ -29,11 +32,12 @@ export default function WithdrawalsPage() {
         setIsLoading(true);
         try {
             const res = await financeService.getAdminWithdrawals(activeTab, currentPage);
-            setRequests(res.requests);
-            setTotalPages(Math.ceil(res.total / 10)); // Assuming limit 10
+            setRequests(Array.isArray(res.data) ? res.data : []);
+            setTotalPages(Math.ceil(res.pagination?.total / 10) || 1);
         } catch (error) {
             console.error("Failed to load withdrawal requests:", error);
             toast.error("Failed to load withdrawal requests");
+            setRequests([]);
         } finally {
             setIsLoading(false);
         }
@@ -54,7 +58,7 @@ export default function WithdrawalsPage() {
         if (!selectedRequest || !rejectReason) return;
         setIsSubmitting(true);
         try {
-            await financeService.rejectWithdrawal(selectedRequest._id, rejectReason);
+            await financeService.rejectWithdrawal(selectedRequest.id, rejectReason);
             toast.success("Withdrawal rejected");
             setIsRejectModalOpen(false);
             setRejectReason("");
@@ -71,7 +75,7 @@ export default function WithdrawalsPage() {
         if (!selectedRequest || !transactionId) return;
         setIsSubmitting(true);
         try {
-            await financeService.completeWithdrawal(selectedRequest._id, transactionId);
+            await financeService.completeWithdrawal(selectedRequest.id, transactionId);
             toast.success("Withdrawal marked as complete");
             setIsCompleteModalOpen(false);
             setTransactionId("");
@@ -80,7 +84,7 @@ export default function WithdrawalsPage() {
         } catch (error) {
             console.error("Failed to complete withdrawal:", error);
         } finally {
-            setIsSubmitting(false);
+        setIsSubmitting(false);
         }
     };
 
@@ -136,7 +140,7 @@ export default function WithdrawalsPage() {
                         <div className="overflow-x-auto">
                             <Table>
                                 <TableHeader className="bg-gray-50 dark:bg-gray-700/50">
-                                    <TableRow>
+                                    <TableRow className="border-b border-gray-200 dark:border-gray-700">
                                         <TableCell isHeader className="px-6 py-4">Host</TableCell>
                                         <TableCell isHeader className="px-6 py-4">Amount</TableCell>
                                         <TableCell isHeader className="px-6 py-4">Date</TableCell>
@@ -146,13 +150,15 @@ export default function WithdrawalsPage() {
                                 </TableHeader>
                                 <TableBody>
                                     {requests.map((req) => (
-                                        <TableRow key={req._id} className="border-b border-gray-100 dark:border-gray-700/50 last:border-0 hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors">
+                                        <TableRow key={req.id} className="border-b border-gray-100 dark:border-gray-700/50 last:border-0 hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors">
                                             <TableCell className="px-6 py-4">
-                                                <div className="text-sm font-semibold text-gray-900 dark:text-white">{req.userId.name}</div>
-                                                <div className="text-[10px] text-gray-500 font-bold">HOST ID: {req.hostId}</div>
+                                                <div className="text-sm font-semibold text-gray-900 dark:text-white">{req.user.name}</div>
+                                                <div className="text-xs text-gray-500">Email: {req.user.email}</div>
+                                                <div className="text-xs text-gray-500">Host ID: {req.user.hostId}</div>
+                                                <div className="text-xs text-gray-500">Note: {req.note}</div>
                                             </TableCell>
                                             <TableCell className="px-6 py-4 font-bold text-gray-900 dark:text-white">
-                                                {formatCurrency(req.amount)}
+                                                {formatCurrency(Number(req.amount))}
                                             </TableCell>
                                             <TableCell className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                                                 {formatDate(req.createdAt)}
@@ -160,38 +166,53 @@ export default function WithdrawalsPage() {
                                             <TableCell className="px-6 py-4">
                                                 <span className={`px-2 py-1 text-xs font-medium rounded-full ${req.status === 'complete' ? 'bg-success-50 text-success-700' :
                                                     req.status === 'pending' ? 'bg-warning-50 text-warning-700' :
-                                                        req.status === 'approved' ? 'bg-indigo-50 text-indigo-700' :
-                                                            'bg-error-50 text-error-700'
-                                                    }`}>
+                                                    req.status === 'approved' ? 'bg-indigo-50 text-indigo-700' :
+                                                    'bg-error-50 text-error-700'
+                                                }`}>
                                                     {req.status}
                                                 </span>
                                             </TableCell>
                                             <TableCell className="px-6 py-4 text-right">
-                                                <div className="flex justify-end gap-2">
-                                                    {req.status === 'pending' && (
-                                                        <>
-                                                            <button
-                                                                onClick={() => handleApprove(req._id)}
-                                                                className="px-3 py-1.5 bg-success-500 text-white text-xs font-medium rounded-lg hover:bg-success-600"
-                                                            >
+                                                <div className="inline-block text-left">
+                                                    <button
+                                                        className="dropdown-toggle text-brand-500 hover:text-brand-600 text-sm font-medium focus:outline-none"
+                                                        onClick={() => setDropdownOpen(dropdownOpen === req.id ? null : req.id)}
+                                                        type="button"
+                                                    >
+                                                        Actions ▾
+                                                    </button>
+                                                    <Dropdown
+                                                        isOpen={dropdownOpen === req.id}
+                                                        onClose={() => setDropdownOpen(null)}
+                                                        dropUp={false}
+                                                    >
+                                                        {req.status === 'pending' && (
+                                                            <DropdownItem onClick={async () => {
+                                                                await handleApprove(req.id);
+                                                                setDropdownOpen(null);
+                                                            }}>
                                                                 Approve
-                                                            </button>
-                                                            <button
-                                                                onClick={() => { setSelectedRequest(req); setIsRejectModalOpen(true); }}
-                                                                className="px-3 py-1.5 bg-error-500 text-white text-xs font-medium rounded-lg hover:bg-error-600"
-                                                            >
+                                                            </DropdownItem>
+                                                        )}
+                                                        {req.status === 'pending' && (
+                                                            <DropdownItem onClick={() => {
+                                                                setSelectedRequest(req);
+                                                                setIsRejectModalOpen(true);
+                                                                setDropdownOpen(null);
+                                                            }}>
                                                                 Reject
-                                                            </button>
-                                                        </>
-                                                    )}
-                                                    {req.status === 'approved' && (
-                                                        <button
-                                                            onClick={() => { setSelectedRequest(req); setIsCompleteModalOpen(true); }}
-                                                            className="px-3 py-1.5 bg-brand-500 text-white text-xs font-medium rounded-lg hover:bg-brand-600"
-                                                        >
-                                                            Mark Paid
-                                                        </button>
-                                                    )}
+                                                            </DropdownItem>
+                                                        )}
+                                                        {req.status === 'approved' && (
+                                                            <DropdownItem onClick={() => {
+                                                                setSelectedRequest(req);
+                                                                setIsCompleteModalOpen(true);
+                                                                setDropdownOpen(null);
+                                                            }}>
+                                                                Complete
+                                                            </DropdownItem>
+                                                        )}
+                                                    </Dropdown>
                                                 </div>
                                             </TableCell>
                                         </TableRow>
