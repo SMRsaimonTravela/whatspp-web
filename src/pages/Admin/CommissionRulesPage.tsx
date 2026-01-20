@@ -88,9 +88,6 @@ export default function CommissionRulesPage() {
         },
     });
 
-    // Watch scope for conditional rendering
-    // const scope = watch("scope");
-
     // When opening modal, reset form with current data
     useEffect(() => {
         if (isModalOpen) {
@@ -132,16 +129,16 @@ export default function CommissionRulesPage() {
                     ...payload,
                     assignedUsers: undefined,
                 };
-                const created: any = await financeService.createCommissionRule(createPayload);
+                const created  = await financeService.createCommissionRule(createPayload);
                 // Assign users if any selected
                 if (data.assignedUsers && data.assignedUsers.length > 0 && created?.id) {
-                    await financeService.assignCommissionRuleUsers(created.id, data.assignedUsers);
+                    await financeService.assignCommissionRuleUsers(created.id, data.assignedUsers.map(x=>x.id));
                 }
                 toast.success("Rule created");
             }
             setIsModalOpen(false);
             loadRules();
-        } catch (e) {
+        } catch{
             toast.error("Failed to save rule");
         } finally {
             setIsSubmitting(false);
