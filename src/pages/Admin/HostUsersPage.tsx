@@ -37,21 +37,21 @@ export default function HostUsersPage() {
           ) : (
             <div className="overflow-x-auto">
               <Table>
-                <TableHeader className="bg-gray-50 dark:bg-gray-700/50">
+                <TableHeader className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
                   <TableRow>
-                    <TableCell isHeader className="px-6 py-4">Name</TableCell>
-                    <TableCell isHeader className="px-6 py-4">Email</TableCell>
-                    <TableCell isHeader className="px-6 py-4">Business Name</TableCell>
-                    <TableCell isHeader className="px-6 py-4">Status</TableCell>
-                    <TableCell isHeader className="px-6 py-4">Commission Rule</TableCell>
-                    <TableCell isHeader className="px-6 py-4">Commission Value</TableCell>
-                    <TableCell isHeader className="px-6 py-4">Commission Type</TableCell>
+                    <TableCell isHeader className="px-6 py-4 font-semibold">Name</TableCell>
+                    <TableCell isHeader className="px-6 py-4 font-semibold">Email</TableCell>
+                    <TableCell isHeader className="px-6 py-4 font-semibold">Business Name</TableCell>
+                    <TableCell isHeader className="px-6 py-4 font-semibold">Status</TableCell>
+                    <TableCell isHeader className="px-6 py-4 font-semibold">Commission Rule</TableCell>
+                    <TableCell isHeader className="px-6 py-4 font-semibold">Commission Value</TableCell>
+                    <TableCell isHeader className="px-6 py-4 font-semibold">Commission Type</TableCell>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {users.map(user => (
                     <TableRow key={user.id} className="border-b border-gray-100 dark:border-gray-700/50 last:border-0 hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors">
-                      <TableCell className="px-6 py-4 font-medium text-gray-900 dark:text-white">{user.name}</TableCell>
+                      <TableCell className="px-6 py-4 text-sm">{user.name}</TableCell>
                       <TableCell className="px-6 py-4 text-sm">{user.email}</TableCell>
                       <TableCell className="px-6 py-4 text-sm">{user.businessName || '-'}</TableCell>
                       <TableCell className="px-6 py-4 text-xs">

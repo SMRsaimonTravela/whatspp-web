@@ -17,27 +17,39 @@ export default function HostWalletPage() {
     const [withdrawNote, setWithdrawNote] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // Fetch wallet only once on mount
     useEffect(() => {
-        loadData();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentPage]);
+        const fetchWallet = async () => {
+            setIsLoading(true);
+            try {
+                const walletRes: IWallet = await financeService.getHostWallet();
+                setWallet(walletRes);
+                fetchHistory(1);
+            } catch (error) {
+                setIsLoading(false);
+            }
+        };
+        fetchWallet();
+    }, []);
 
-    const loadData = async () => {
+    // Fetch history for a given page (no walletId)
+    const fetchHistory = async (page: number) => {
         setIsLoading(true);
         try {
-            const [walletRes, historyRes]: [IWallet, IWalletHistoryResponse] = await Promise.all([
-                financeService.getHostWallet(),
-                financeService.getHostWalletHistory(currentPage)
-            ]);
-            setWallet(walletRes);
+            const historyRes: IWalletHistoryResponse = await financeService.getHostWalletHistory(page);
             setHistory(historyRes.data);
             setTotalPages(historyRes.pagination.last_page);
         } catch (error) {
-            console.error("Failed to load wallet data:", error);
-            toast.error("Failed to load wallet data");
+            // No error toast or console for GET
         } finally {
             setIsLoading(false);
         }
+    };
+
+    // On pagination change, fetch history only
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+        fetchHistory(page);
     };
 
     const handleWithdrawRequest = async () => {
@@ -58,7 +70,8 @@ export default function HostWalletPage() {
             setIsWithdrawModalOpen(false);
             setWithdrawAmount("");
             setWithdrawNote("");
-            loadData();
+            const walletRes: IWallet = await financeService.getHostWallet();
+            setWallet(walletRes);
         } catch (error) {
             console.error("Withdrawal request failed:", error);
         } finally {
@@ -191,14 +204,14 @@ export default function HostWalletPage() {
                             <span className="text-sm text-gray-500">Page {currentPage} of {totalPages}</span>
                             <div className="flex gap-2">
                                 <button
-                                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                    onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                                     disabled={currentPage === 1}
                                     className="px-4 py-1.5 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 disabled:opacity-50 hover:bg-gray-50 transition-colors"
                                 >
                                     Previous
                                 </button>
                                 <button
-                                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                    onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
                                     disabled={currentPage === totalPages}
                                     className="px-4 py-1.5 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 disabled:opacity-50 hover:bg-gray-50 transition-colors"
                                 >

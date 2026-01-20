@@ -23,9 +23,9 @@ export default function CommissionRulesPage() {
         name: "",
         scope: "global",
         type: "percentage",
-        value: 0, // number
-        maxAmount: 0, // number
-        priority: 0, // number
+        value: 0,
+        maxAmount: 0,
+        priority: 0,
         status: "active",
     });
 
@@ -227,14 +227,14 @@ export default function CommissionRulesPage() {
                                 <TableHeader
                                     className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600">
                                     <TableRow>
-                                        <TableCell isHeader className="px-6 py-4">Rule Name</TableCell>
-                                        <TableCell isHeader className="px-6 py-4">Scope</TableCell>
-                                        <TableCell isHeader className="px-6 py-4">Rate</TableCell>
-                                        <TableCell isHeader className="px-6 py-4 text-center">Priority</TableCell>
-                                        <TableCell isHeader className="px-6 py-4">Created By</TableCell>
-                                        <TableCell isHeader className="px-6 py-4">Assigned Users</TableCell>
-                                        <TableCell isHeader className="px-6 py-4 text-center">Status</TableCell>
-                                        <TableCell isHeader className="px-6 py-4 text-right">Actions</TableCell>
+                                        <TableCell isHeader className="px-6 py-4 dark:text-gray-200">Rule Name</TableCell>
+                                        <TableCell isHeader className="px-6 py-4 dark:text-gray-200">Scope</TableCell>
+                                        <TableCell isHeader className="px-6 py-4 dark:text-gray-200">Rate</TableCell>
+                                        <TableCell isHeader className="px-6 py-4 text-center dark:text-gray-200">Priority</TableCell>
+                                        <TableCell isHeader className="px-6 py-4 dark:text-gray-200">Created By</TableCell>
+                                        <TableCell isHeader className="px-6 py-4 dark:text-gray-200">Assigned Users</TableCell>
+                                        <TableCell isHeader className="px-6 py-4 text-center dark:text-gray-200">Status</TableCell>
+                                        <TableCell isHeader className="px-6 py-4 text-right dark:text-gray-200">Actions</TableCell>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -244,14 +244,11 @@ export default function CommissionRulesPage() {
                                             <TableCell className="px-6 py-4">
                                                 <div className="text-sm text-gray-900 dark:text-white">{rule.name}</div>
                                             </TableCell>
-                                            <TableCell
-                                                className="px-6 py-4 capitalize text-sm text-gray-600 dark:text-gray-400">{rule.scope}</TableCell>
-                                            <TableCell
-                                                className="px-6 py-4 text-gray-900 dark:text-white text-sm">{rule.type === 'percentage' ? `${rule.value}%` : `৳${rule.value}`}</TableCell>
-                                            <TableCell
-                                                className="px-6 py-4 text-center text-sm">{rule.priority}</TableCell>
+                                            <TableCell className="px-6 py-4 capitalize text-sm text-gray-600 dark:text-gray-400">{rule.scope}</TableCell>
+                                            <TableCell className="px-6 py-4 text-gray-900 dark:text-white text-sm">{rule.type === 'percentage' ? `${rule.value}%` : `৳${rule.value}`}</TableCell>
+                                            <TableCell className="px-6 py-4 text-center text-sm dark:text-white">{rule.priority}</TableCell>
                                             <TableCell className="px-6 py-4 text-sm">
-                                                <div>{rule.user?.email}</div>
+                                                <div className="text-gray-900 dark:text-white">{rule.user?.email}</div>
                                             </TableCell>
                                             <TableCell className="px-6 py-4 text-sm">
                                                 {rule.assignedUsers && rule.assignedUsers.length > 0 ? (
@@ -587,3 +584,4 @@ export default function CommissionRulesPage() {
         </>
     );
 }
+
