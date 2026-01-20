@@ -85,7 +85,13 @@ export interface BlockedNumber {
   status: 'pending' | 'approved' | 'rejected';
   requestSource?: string;
   createdAt: string;
+  userId:string
 }
+
+export interface IBlockNumbersAdmin extends  BlockedNumber{
+  user :IUser
+}
+
 
 // Session Types
 export interface Session {

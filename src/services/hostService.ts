@@ -78,29 +78,29 @@ export const hostService = {
   // Blocked Numbers
   getBlockedNumbers: async (params?: { page?: number; limit?: number; status?: string }): Promise<{
     success: boolean;
-    data: { blockedNumbers: BlockedNumber[]; pagination: Pagination };
+    data: BlockedNumber[]; pagination: Pagination
   }> => {
-    const response = await api.get('/blocked-numbers', { params });
+    const response = await api.get('/host/blocked-numbers', { params });
     return response.data;
   },
 
   requestBlock: async (data: { phoneNumber: string; name?: string; reason?: string }): Promise<{ success: boolean; message: string }> => {
-    const response = await api.post('/blocked-numbers', data);
+    const response = await api.post('/host/blocked-numbers', data);
     return response.data;
   },
 
   bulkBlockRequest: async (numbers: Array<{ phoneNumber: string; name?: string; reason?: string }>): Promise<{ success: boolean; message: string }> => {
-    const response = await api.post('/blocked-numbers/bulk', { numbers });
+    const response = await api.post('/host/blocked-numbers/bulk', { numbers });
     return response.data;
   },
 
   removeBlockedNumber: async (id: string): Promise<{ success: boolean }> => {
-    const response = await api.delete(`/blocked-numbers/${id}`);
+    const response = await api.delete(`/host/blocked-numbers/${id}`);
     return response.data;
   },
 
   checkIfBlocked: async (phoneNumber: string): Promise<{ success: boolean; data: { isBlocked: boolean } }> => {
-    const response = await api.get(`/blocked-numbers/check/${phoneNumber}`);
+    const response = await api.get(`/host/blocked-numbers/check/${phoneNumber}`);
     return response.data;
   },
 };

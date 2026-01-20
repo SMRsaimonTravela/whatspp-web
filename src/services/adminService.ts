@@ -1,5 +1,18 @@
 import api from './api';
-import type { IUser, BlockedNumber, Setting, Pagination, HostsResponse, HostDetailResponse, GuestsResponse, MessagesResponse, ConversationResponse, HostsQueryParams, GuestsQueryParams, MessagesQueryParams } from '../types';
+import {
+  IUser,
+  Setting,
+  Pagination,
+  HostsResponse,
+  HostDetailResponse,
+  GuestsResponse,
+  MessagesResponse,
+  ConversationResponse,
+  HostsQueryParams,
+  GuestsQueryParams,
+  MessagesQueryParams,
+  IBlockNumbersAdmin
+} from '../types';
 import type { IAdminFeedbacksResponse } from '../types';
 import type { IHostUser } from "../types/users.type"; // Import IHostUser type
 
@@ -12,13 +25,25 @@ export const adminService = {
     status?: string;
     userType?: string;
     search?: string;
-  }): Promise<{ success: boolean; data: { users: IUser[]; pagination: Pagination } }> => {
-    const response = await api.get('/users', { params });
+  }): Promise<{ success: boolean; data: IUser[]; pagination: Pagination }> => {
+    const response = await api.get('/admin/users/all', { params });
     return response.data;
   },
 
+  getAdminUsers: async (params?: {
+    page?: number;
+    limit?: number;
+    status?: string;
+    userType?: string;
+    search?: string;
+  }): Promise<{ success: boolean; data: IUser[]; pagination: Pagination }> => {
+    const response = await api.get('/admin/users/admins', { params });
+    return response.data;
+  },
+
+
   getPendingUsers: async (): Promise<{ success: boolean; data: IUser[] }> => {
-    const response = await api.get('/users/pending');
+    const response = await api.get('/admin/users/pending');
     return response.data;
   },
 
@@ -57,19 +82,19 @@ export const adminService = {
   // Block Requests Management
   getPendingBlockRequests: async (params?: { page?: number; limit?: number }): Promise<{
     success: boolean;
-    data: { requests: BlockedNumber[]; pagination: Pagination };
+    data: IBlockNumbersAdmin[]; pagination: Pagination
   }> => {
-    const response = await api.get('/blocked-numbers/admin/pending', { params });
+    const response = await api.get('/admin/blocked-numbers', { params });
     return response.data;
   },
 
   approveBlockRequest: async (id: string): Promise<{ success: boolean; message: string }> => {
-    const response = await api.put(`/blocked-numbers/admin/${id}/approve`);
+    const response = await api.patch(`/admin/blocked-numbers/${id}/approve`);
     return response.data;
   },
 
   rejectBlockRequest: async (id: string): Promise<{ success: boolean; message: string }> => {
-    const response = await api.put(`/blocked-numbers/admin/${id}/reject`);
+    const response = await api.patch(`/admin/blocked-numbers/${id}/reject`);
     return response.data;
   },
 
@@ -77,27 +102,27 @@ export const adminService = {
 
   // Settings
   getSettings: async (category?: string): Promise<{ success: boolean; data: Setting[] }> => {
-    const response = await api.get('/settings', { params: { category } });
+    const response = await api.get('/admin/settings', { params: { category } });
     return response.data;
   },
 
   getSetting: async (key: string): Promise<{ success: boolean; data: Setting }> => {
-    const response = await api.get(`/settings/${key}`);
+    const response = await api.get(`/admin/settings/${key}`);
     return response.data;
   },
 
   updateSetting: async (key: string, value: number | string | boolean): Promise<{ success: boolean; data: Setting }> => {
-    const response = await api.put(`/settings/${key}`, { value });
+    const response = await api.put(`/admin/settings/${key}`, { value });
     return response.data;
   },
 
   bulkUpdateSettings: async (settings: Array<{ key: string; value: number | string | boolean }>): Promise<{ success: boolean }> => {
-    const response = await api.put('/settings', { settings });
+    const response = await api.put('/admin/settings', { settings });
     return response.data;
   },
 
   initializeSettings: async (): Promise<{ success: boolean; message: string }> => {
-    const response = await api.post('/settings/initialize');
+    const response = await api.post('/admin/settings/initialize');
     return response.data;
   },
 

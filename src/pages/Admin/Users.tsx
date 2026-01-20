@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import PageMeta from "../../components/common/PageMeta";
 import { adminService } from "../../services/adminService";
-import type { User, Pagination } from "../../types";
+import type {IUser, Pagination} from "../../types";
 import { Modal } from "../../components/ui/modal";
 import { Drawer } from "../../components/ui/drawer";
 import { financeService } from "../../services/financeService";
@@ -10,7 +10,7 @@ import { IHostFinancialDetails } from "../../types/finance";
 import toast from "react-hot-toast";
 
 export default function Users() {
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<IUser[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -19,7 +19,7 @@ export default function Users() {
   const [search, setSearch] = useState("");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
   const [rejectReason, setRejectReason] = useState("");
   const [createForm, setCreateForm] = useState({
     name: "",
@@ -55,8 +55,8 @@ export default function Users() {
 
       const response = await adminService.getUsers(params);
       if (response.success) {
-        setUsers(response.data.users);
-        setPagination(response.data.pagination);
+        setUsers(response.data);
+        setPagination(response.pagination);
       }
     } catch (error) {
       console.error("Failed to load users:", error);
@@ -136,7 +136,7 @@ export default function Users() {
     }
   };
 
-  const handleViewHostDetails = async (user: User) => {
+  const handleViewHostDetails = async (user: IUser) => {
     setIsDetailsLoading(true);
     setIsDrawerOpen(true);
     setSelectedHostFinance(null);

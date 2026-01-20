@@ -3,6 +3,7 @@ import PageMeta from "../../components/common/PageMeta";
 import { hostService } from "../../services/hostService";
 import type { BlockedNumber, Pagination } from "../../types";
 import { Modal } from "../../components/ui/modal";
+import ConfirmationModal from "../../components/ui/ConfirmationModal";
 import toast from "react-hot-toast";
 
 export default function BlockedNumbers() {
@@ -15,6 +16,8 @@ export default function BlockedNumbers() {
   const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
   const [addForm, setAddForm] = useState({ phoneNumber: "", name: "", reason: "" });
   const [bulkNumbers, setBulkNumbers] = useState("");
+  const [deleteModal, setDeleteModal] = useState<{ id: string | null; open: boolean; action: "approve" | "reject" | null }>({ id: null, open: false, action: null });
+  const [isDeleteLoading, setIsDeleteLoading] = useState(false);
 
   useEffect(() => {
     loadBlockedNumbers();
@@ -28,8 +31,8 @@ export default function BlockedNumbers() {
 
       const response = await hostService.getBlockedNumbers(params);
       if (response.success) {
-        setBlockedNumbers(response.data.blockedNumbers);
-        setPagination(response.data.pagination);
+        setBlockedNumbers(response.data);
+        setPagination(response.pagination);
       }
     } catch (error) {
       console.error("Failed to load blocked numbers:", error);
@@ -82,16 +85,29 @@ export default function BlockedNumbers() {
   };
 
   const handleRemoveBlock = async (id: string) => {
-    if (!confirm("Are you sure you want to remove this block request?")) return;
+    setDeleteModal({ id, open: true, action: "reject" }); // Use 'reject' for delete action
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteModal.id) return;
+    setIsDeleteLoading(true);
     try {
-      const response = await hostService.removeBlockedNumber(id);
+      const response = await hostService.removeBlockedNumber(deleteModal.id);
       if (response.success) {
         toast.success("Block request removed");
         loadBlockedNumbers();
       }
     } catch (error) {
       console.error("Failed to remove block:", error);
+    } finally {
+      setIsDeleteLoading(false);
+      setDeleteModal({ id: null, open: false, action: null });
     }
+  };
+
+  const cancelDelete = () => {
+    if (isDeleteLoading) return;
+    setDeleteModal({ id: null, open: false, action: null });
   };
 
   const getStatusBadge = (status: string) => {
@@ -347,7 +363,15 @@ export default function BlockedNumbers() {
           </div>
         </div>
       </Modal>
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={deleteModal.open}
+        action={deleteModal.action}
+        loading={isDeleteLoading}
+        onCancel={cancelDelete}
+        onConfirm={confirmDelete}
+      />
     </>
   );
 }
-

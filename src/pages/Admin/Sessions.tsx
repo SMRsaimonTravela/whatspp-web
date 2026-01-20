@@ -4,11 +4,10 @@ import { whatsappService } from "../../services/whatsapp.service";
 import type { Session } from "../../types";
 import { Modal } from "../../components/ui/modal";
 import toast from "react-hot-toast";
+import {ISessionStatus} from "../../types/session";
 
 export default function Sessions() {
-  const [sessions, setSessions] = useState<Session[]>([]);
-  const [totalActive, setTotalActive] = useState(0);
-  const [totalStored, setTotalStored] = useState(0);
+  const [sessions, setSessions] = useState<ISessionStatus[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -21,9 +20,8 @@ export default function Sessions() {
     setIsLoading(true);
     try {
       const data = await whatsappService.getAllSessions();
-      setSessions(data.sessions);
-      setTotalActive(data.totalActive);
-      setTotalStored(data.totalStored);
+      setSessions(data.data);
+
     } catch (error) {
       console.error("Failed to load sessions:", error);
     } finally {
@@ -34,7 +32,7 @@ export default function Sessions() {
   const handleViewDetails = async (sessionId: string) => {
     try {
       const data = await whatsappService.getSessionStatus(sessionId, true);
-      setSelectedSession(data as any); // Type cast if needed or update Session type
+      setSelectedSession(data as any);
       setIsDetailModalOpen(true);
     } catch (error) {
       console.error("Failed to load session details:", error);
@@ -69,9 +67,9 @@ export default function Sessions() {
   };
 
   const getStatusBadge = (session: Session) => {
-    if (!session.isActive) {
-      return <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-400">Stored</span>;
-    }
+    // if (!session.isActive) {
+    //   return <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-400">Stored</span>;
+    // }
     switch (session.status) {
       case 'ready':
         return <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-success-100 text-success-700 dark:bg-success-500/20 dark:text-success-400">Ready</span>;
@@ -104,7 +102,7 @@ export default function Sessions() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">Active Sessions</p>
-                <h3 className="text-2xl font-bold text-gray-800 dark:text-white mt-1">{totalActive}</h3>
+                <h3 className="text-2xl font-bold text-gray-800 dark:text-white mt-1">{sessions.filter(x=>x.status === "ready").length}</h3>
               </div>
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-success-100 dark:bg-success-500/20">
                 <svg className="h-6 w-6 text-success-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -118,7 +116,7 @@ export default function Sessions() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">Stored Sessions</p>
-                <h3 className="text-2xl font-bold text-gray-800 dark:text-white mt-1">{totalStored}</h3>
+                <h3 className="text-2xl font-bold text-gray-800 dark:text-white mt-1">{sessions.length}</h3>
               </div>
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-100 dark:bg-brand-500/20">
                 <svg className="h-6 w-6 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -186,7 +184,7 @@ export default function Sessions() {
                         {getStatusBadge(session)}
                       </td>
                       <td className="py-3 px-4">
-                        {session.isActive ? (
+                        {session.status === "ready" ? (
                           <span className="inline-flex h-2 w-2 rounded-full bg-success-500"></span>
                         ) : (
                           <span className="inline-flex h-2 w-2 rounded-full bg-gray-400"></span>
@@ -248,7 +246,7 @@ export default function Sessions() {
               </div>
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">Connected</p>
-                <p className="text-gray-800 dark:text-white">{selectedSession.connected ? "Yes" : "No"}</p>
+                <p className="text-gray-800 dark:text-white">{selectedSession.status === "ready" ? "Yes" : "No"}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">Has QR</p>

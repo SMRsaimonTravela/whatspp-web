@@ -4,11 +4,12 @@ import {
     IWithdrawalRequest,
     IHostFinancialDetails,
     IWalletLedger,
-    ICommissionRule,
     IWallet,
     IWalletHistoryResponse, IWithdrawalsResponse
 } from '../types/finance';
+
 import { IPagination, APIFilters } from '../types/common';
+import {ICommissionRule} from "../types/commission.ts";
 
 // --- HOST APIs ---
 
@@ -82,7 +83,7 @@ export const createCommissionRule = async (rule: Partial<ICommissionRule>): Prom
 
 /** Get all commission rules */
 export const getCommissionRules = async (): Promise<ICommissionRule[]> => {
-    const res = await api.get('/admin/commission-rules');
+    const res:{data: {data:ICommissionRule[]}} = await api.get('/admin/commission-rules');
     return res.data.data;
 };
 

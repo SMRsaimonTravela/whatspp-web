@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import PageMeta from "../../components/common/PageMeta";
 import {financeService} from "../../services/financeService";
 import {adminService} from "../../services/adminService";
-import {ICommissionRule} from "../../types/commission";
+import {ICommissionRule} from "../../types/commission.ts";
 import {IAssignedUser, IHostUser} from "../../types/users.type";
 import {Table, TableBody, TableCell, TableHeader, TableRow} from "../../components/ui/table";
 import {Modal} from "../../components/ui/modal";
@@ -14,7 +14,7 @@ import {DropdownItem} from "../../components/ui/dropdown/DropdownItem";
 import Switch from "../../components/form/switch/Switch";
 
 export default function CommissionRulesPage() {
-    const [rules, setRules] = useState<ICommissionRule[]>([]);
+    const [rules, setRules] = useState<ICommissionRule[]>([] as ICommissionRule[]);
     const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -64,7 +64,7 @@ export default function CommissionRulesPage() {
         try {
             const res = await adminService.getHostUsers();
             setHostUsers(res.data || []);
-        } catch (e) {
+        } catch{
             toast.error("Failed to load host users");
         }
     };
@@ -80,8 +80,8 @@ export default function CommissionRulesPage() {
             name: "",
             scope: "global",
             type: "percentage",
-            value: "", // number
-            maxAmount: "", // number
+            value: 0, // number
+            maxAmount: 0, // number
             priority: 1, // number
             status: "active",
             assignedUsers: [] as string[],
@@ -89,7 +89,7 @@ export default function CommissionRulesPage() {
     });
 
     // Watch scope for conditional rendering
-    const scope = watch("scope");
+    // const scope = watch("scope");
 
     // When opening modal, reset form with current data
     useEffect(() => {

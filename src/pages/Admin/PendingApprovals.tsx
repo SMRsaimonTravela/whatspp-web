@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import PageMeta from "../../components/common/PageMeta";
 import { adminService } from "../../services/adminService";
-import type { User } from "../../types";
 import toast from "react-hot-toast";
+import {IUser} from "../../types";
 
 export default function PendingApprovals() {
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<IUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [rejectingUser, setRejectingUser] = useState<User | null>(null);
+  const [rejectingUser, setRejectingUser] = useState<IUser | null>(null);
   const [rejectReason, setRejectReason] = useState("");
 
   useEffect(() => {

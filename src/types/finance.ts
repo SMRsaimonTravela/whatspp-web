@@ -62,17 +62,7 @@ export interface IWithdrawalRequest {
     updatedAt: string;
 }
 
-export interface ICommissionRule {
-    _id: string;
-    name: string;
-    scope: CommissionScope;
-    hostId?: number;
-    type: CommissionType;
-    value: number;
-    maxAmount?: number;
-    priority: number;
-    status: 'active' | 'inactive';
-}
+
 export interface IWalletUser {
     id: string;
     name: string;
