@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import type { IHostUser, IAssignedUser } from "../../types/users.type";
+import { Link } from "react-router";
+import type { IHostUser } from "../../types/users.type";
 import PageMeta from "../../components/common/PageMeta";
 import { Table, TableHeader, TableBody, TableRow, TableCell } from "../../components/ui/table";
 import { adminService } from "../../services/adminService";
@@ -51,7 +52,15 @@ export default function HostUsersPage() {
                 <TableBody>
                   {users.map(user => (
                     <TableRow key={user.id} className="border-b border-gray-100 dark:border-gray-700/50 last:border-0 hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors">
-                      <TableCell className="px-6 py-4 text-sm">{user.name}</TableCell>
+                      <TableCell className="px-6 py-4 text-sm">
+                        <Link
+                          to={`/admin/hosts/${user.id}`}
+                          className="hover:underline cursor-pointer text-brand-600 dark:text-brand-400 transition-colors"
+                          style={{ textDecoration: 'none' }}
+                        >
+                          {user.name}
+                        </Link>
+                      </TableCell>
                       <TableCell className="px-6 py-4 text-sm">{user.email}</TableCell>
                       <TableCell className="px-6 py-4 text-sm">{user.businessName || '-'}</TableCell>
                       <TableCell className="px-6 py-4 text-xs">

@@ -2,19 +2,17 @@ import api from './api';
 import {
   IUser,
   Setting,
-  Pagination,
   HostsResponse,
-  HostDetailResponse,
-  GuestsResponse,
   MessagesResponse,
-  ConversationResponse,
   HostsQueryParams,
   GuestsQueryParams,
   MessagesQueryParams,
-  IBlockNumbersAdmin
+  IBlockNumbersAdmin,
+  IGuestsResponse, IConversationResponse
 } from '../types';
 import type { IAdminFeedbacksResponse } from '../types';
-import type { IHostUser } from "../types/users.type"; // Import IHostUser type
+import {IHostUser, IUserDetailResponse} from "../types/users.type";
+import {IPagination} from "../types/common.ts"; // Import IHostUser type
 
 
 export const adminService = {
@@ -25,8 +23,8 @@ export const adminService = {
     status?: string;
     userType?: string;
     search?: string;
-  }): Promise<{ success: boolean; data: IUser[]; pagination: Pagination }> => {
-    const response = await api.get('/admin/users/all', { params });
+  }): Promise<{ success: boolean; data: IUser[]; pagination: IPagination }> => {
+    const response = await api.get('/admin/users', { params });
     return response.data;
   },
 
@@ -36,7 +34,7 @@ export const adminService = {
     status?: string;
     userType?: string;
     search?: string;
-  }): Promise<{ success: boolean; data: IUser[]; pagination: Pagination }> => {
+  }): Promise<{ success: boolean; data: IUser[]; pagination: IPagination }> => {
     const response = await api.get('/admin/users/admins', { params });
     return response.data;
   },
@@ -82,7 +80,7 @@ export const adminService = {
   // Block Requests Management
   getPendingBlockRequests: async (params?: { page?: number; limit?: number }): Promise<{
     success: boolean;
-    data: IBlockNumbersAdmin[]; pagination: Pagination
+    data: IBlockNumbersAdmin[]; pagination: IPagination
   }> => {
     const response = await api.get('/admin/blocked-numbers', { params });
     return response.data;
@@ -132,20 +130,19 @@ export const adminService = {
     return response.data;
   },
 
-  getHostDetails: async (hostId: string): Promise<HostDetailResponse> => {
-    const response = await api.get(`/admin/hosts/${hostId}`);
+  getUserDetails: async (hostId: string): Promise<IUserDetailResponse> => {
+    const response = await api.get(`/admin/users/${hostId}`);
     return response.data;
   },
 
-  getHostGuests: async (hostId: string, params?: GuestsQueryParams): Promise<GuestsResponse> => {
-    // Ensure page and limit are numbers
+  getHostGuests: async (hostId: string, params?: GuestsQueryParams): Promise<IGuestsResponse> => {
     const safeParams = {
       ...params,
-      page: params?.page !== undefined ? Number(params.page) : undefined,
-      limit: params?.limit !== undefined ? Number(params.limit) : undefined,
+      page: params?.page !== undefined ? Number(params.page) : 1,
+      limit: params?.limit !== undefined ? Number(params.limit) : 100,
     };
-    const response = await api.get(`/admin/hosts/${hostId}/guests`, { params: safeParams });
-    return response.data;
+   const response= await api.get(`/admin/host/${hostId}/guests`, { params: safeParams });
+   return response.data
   },
 
   getHostMessages: async (hostId: string, params?: MessagesQueryParams): Promise<MessagesResponse> => {
@@ -153,8 +150,8 @@ export const adminService = {
     return response.data;
   },
 
-  getHostGuestMessages: async (hostId: string, guestId: string, params?: { page?: number; limit?: number }): Promise<ConversationResponse> => {
-    const response = await api.get(`/admin/hosts/${hostId}/guests/${guestId}/messages`, { params });
+  getHostGuestMessages: async (guestId: string, params?: { page?: number; limit?: number }): Promise<IConversationResponse> => {
+    const response = await api.get(`/admin/${guestId}/messages`, { params });
     return response.data;
   },
 
@@ -170,7 +167,7 @@ export const adminService = {
 };
 
 export const getAdminFeedbacks = async (): Promise<IAdminFeedbacksResponse> => {
-  const response = await api.get('/admin/feedback');
+  const response = await api.get('/admin/messages/feedbacks');
   return response.data;
 };
 

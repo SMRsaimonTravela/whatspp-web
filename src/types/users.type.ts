@@ -1,4 +1,4 @@
-// User-related types for admin/host users
+import {IWallet} from "./finance.ts";
 
 export interface IHostUser {
   id: string;
@@ -39,4 +39,14 @@ export interface IAssignedUser {
   status: string;
   createdAt: string;
   updatedAt: string;
+}
+
+
+export interface IUserDetails extends IHostUser{
+  hostWallet:IWallet
+}
+export interface IUserDetailResponse {
+  success: boolean;
+  data: IUserDetails;
+  message: string;
 }

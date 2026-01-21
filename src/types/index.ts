@@ -1,4 +1,7 @@
 // User Types
+import {IPagination} from "./common.ts";
+import {IHostUser} from "./users.type.ts";
+
 export interface IUser {
   id: string;
   name: string;
@@ -32,23 +35,7 @@ export interface RegisterResponse {
   };
 }
 
-// Message Types
-export interface Message {
-  _id: string;
-  hostId: string;
-  guestId: string;
-  guestNumber: string;
-  prompt: string;
-  reply?: string;
-  messageType: string;
-  audioTranscription?: string;
-  feedback?: 'positive' | 'negative' | 'neutral' | 'resolve';
-  feedbackNote?: string;
-  feedbackResolvedAt?: string | null;
-  whatsappMessageId?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+
 
 export interface MessageStats {
   totalMessages: number;
@@ -61,9 +48,9 @@ export interface MessageStats {
 }
 
 // Guest Types
-export interface Guest {
-  _id: string;
-  hostId: string;
+export interface IGuest {
+  id: string;
+  userId: string;
   name?: string;
   whatsappNumber: string;
   originalNumber?: string;
@@ -120,14 +107,6 @@ export interface Setting {
   category: 'ai' | 'rate_limiting' | 'general' | 'custom';
 }
 
-// Pagination Types
-export interface Pagination {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
-}
-
 // API Response Types
 export interface ApiResponse<T> {
   success: boolean;
@@ -141,7 +120,7 @@ export interface PaginatedResponse<T> {
   data: {
     [key: string]: T[];
   } & {
-    pagination: Pagination;
+    pagination: IPagination;
   };
 }
 
@@ -162,42 +141,40 @@ export interface Host {
 
 export interface HostsResponse {
   success: boolean;
-  data: {
-    users: Host[];
-    pagination: Pagination;
-  };
+  data: IHostUser[]
+  pagination: IMessage;
 }
 
 export interface HostDetailResponse {
   success: boolean;
-  data: Host;
+  data: IHostUser;
 }
 
 // Updated GuestsResponse to match spec
-export interface GuestsResponse {
+export interface IGuestsResponse {
   success: boolean;
-  data: {
-    guests: Guest[];
-    pagination: Pagination;
-  };
+    data: IGuest[];
+    pagination: IPagination;
+    filter:{
+      search: {
+        label:string, placeholder:string, type:string
+      };
+    }
 }
 
 // Updated MessagesResponse to match spec
 export interface MessagesResponse {
   success: boolean;
   data: {
-    messages: Message[];
-    pagination: Pagination;
+    messages: IMessage[];
+    pagination: IPagination;
   };
 }
 
-export interface ConversationResponse {
+export interface IConversationResponse {
   success: boolean;
-  data: {
-    guest: Guest;
-    messages: Message[];
-    pagination: Pagination;
-  };
+  data:IMessage[]
+  pagination: IPagination;
 }
 
 // API Query Parameters
@@ -241,12 +218,8 @@ export interface IAnalyticsApiResponse {
 
 export interface IAdminFeedbacksResponse {
   success: boolean;
-  data: {
-    messages: IMessage[];
-    total: number;
-    page: number;
-    limit: number;
-  };
+  data: IMessage[];
+  pagination: IPagination
 }
 
 export interface IMessage {

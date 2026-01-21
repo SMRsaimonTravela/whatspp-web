@@ -22,12 +22,10 @@ const FeedbackList: React.FC = () => {
     setLoading(true);
     try {
       const res = await getAdminFeedbacks();
-      setMessages(res.data.messages);
-      setPagination({
-        page: res.data.page,
-        limit: res.data.limit,
-        total: res.data.total,
-      });
+
+      console.log(res,"res")
+      setMessages(res.data);
+      setPagination(res.pagination);
     } catch {
       toast.error("Failed to fetch feedbacks");
     } finally {
