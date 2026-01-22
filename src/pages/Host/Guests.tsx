@@ -2,17 +2,18 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import PageMeta from "../../components/common/PageMeta";
 import { hostService } from "../../services/hostService";
-import type { Guest, Pagination } from "../../types";
 import { Modal } from "../../components/ui/modal";
 import toast from "react-hot-toast";
+import { IGuest } from "../../types";
+import { IPagination } from "../../types/common";
 
 export default function Guests() {
-  const [guests, setGuests] = useState<Guest[]>([]);
-  const [pagination, setPagination] = useState<Pagination | null>(null);
+  const [guests, setGuests] = useState<IGuest[]>([]);
+  const [pagination, setPagination] = useState<IPagination | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [editingGuest, setEditingGuest] = useState<Guest | null>(null);
+  const [editingGuest, setEditingGuest] = useState<IGuest | null>(null);
   const [editForm, setEditForm] = useState({ name: "", originalNumber: "" });
 
   useEffect(() => {
@@ -27,8 +28,8 @@ export default function Guests() {
 
       const response = await hostService.getGuests(params);
       if (response.success) {
-        setGuests(response.data.guests);
-        setPagination(response.data.pagination);
+        setGuests(response.data);
+        setPagination(response.pagination);
       }
     } catch (error) {
       console.error("Failed to load guests:", error);
@@ -42,12 +43,12 @@ export default function Guests() {
     loadGuests();
   };
 
-  const handleToggleAI = async (guest: Guest) => {
+  const handleToggleAI = async (guest: IGuest) => {
     try {
-      const response = await hostService.toggleGuestAI(guest._id, !guest.aiAutoReplyEnabled);
+      const response = await hostService.toggleGuestAI(guest.id, !guest.aiAutoReplyEnabled);
       if (response.success) {
         setGuests(guests.map(g =>
-          g._id === guest._id ? { ...g, aiAutoReplyEnabled: !g.aiAutoReplyEnabled } : g
+          g.id === guest.id ? { ...g, aiAutoReplyEnabled: !g.aiAutoReplyEnabled } : g
         ));
         toast.success(`AI auto-reply ${!guest.aiAutoReplyEnabled ? 'enabled' : 'disabled'} for this guest`);
       }
@@ -56,7 +57,7 @@ export default function Guests() {
     }
   };
 
-  const handleEditGuest = (guest: Guest) => {
+  const handleEditGuest = (guest: IGuest) => {
     setEditingGuest(guest);
     setEditForm({
       name: guest.name || "",
@@ -67,10 +68,10 @@ export default function Guests() {
   const handleSaveGuest = async () => {
     if (!editingGuest) return;
     try {
-      const response = await hostService.updateGuest(editingGuest._id, editForm);
+      const response = await hostService.updateGuest(editingGuest.id, editForm);
       if (response.success) {
         setGuests(guests.map(g =>
-          g._id === editingGuest._id ? { ...g, ...editForm } : g
+          g.id === editingGuest.id ? { ...g, ...editForm } : g
         ));
         setEditingGuest(null);
         toast.success("Guest updated successfully");
@@ -145,7 +146,7 @@ export default function Guests() {
                 </thead>
                 <tbody>
                   {guests.map((guest) => (
-                    <tr key={guest._id} className="border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                    <tr key={guest.id} className="border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/50">
                       <td className="py-3 px-4">
                         <p className="text-sm font-medium text-gray-800 dark:text-white">
                           {guest.name || guest.notifyName || "Unknown"}
@@ -194,10 +195,10 @@ export default function Guests() {
                             Edit
                           </button>
                           <Link
-                            to={`/host/conversation/${encodeURIComponent(guest._id)}`}
+                            to={`/host/conversation?guestId=${encodeURIComponent(guest.id)}`}
                             className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 text-sm"
                           >
-                            View Chat
+                            View Messages
                           </Link>
                         </div>
                       </td>
@@ -209,10 +210,10 @@ export default function Guests() {
           )}
 
           {/* Pagination */}
-          {pagination && pagination.totalPages > 1 && (
+          {pagination && pagination.last_page > 1 && (
             <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Showing {((currentPage - 1) * pagination.limit) + 1} to {Math.min(currentPage * pagination.limit, pagination.total)} of {pagination.total} guests
+                Showing {((currentPage - 1) * pagination.per_page) + 1} to {Math.min(currentPage * pagination.per_page, pagination.total)} of {pagination.total} guests
               </p>
               <div className="flex items-center gap-2">
                 <button
@@ -223,11 +224,11 @@ export default function Guests() {
                   Previous
                 </button>
                 <span className="text-sm text-gray-700 dark:text-gray-300">
-                  Page {currentPage} of {pagination.totalPages}
+                  Page {currentPage} of {pagination.last_page}
                 </span>
                 <button
                   onClick={() => setCurrentPage(currentPage + 1)}
-                  disabled={currentPage === pagination.totalPages}
+                  disabled={currentPage === pagination.last_page}
                   className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   Next

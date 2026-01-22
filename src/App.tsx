@@ -64,7 +64,7 @@ export default function App() {
             <Route index path="/host" element={<HostDashboard />} />
             <Route path="/host/whatsapp" element={<WhatsAppConnection />} />
             <Route path="/host/messages" element={<Messages />} />
-            <Route path="/host/conversation/:guestId" element={<Conversation />} />
+            <Route path="/host/conversation" element={<Conversation />} />
             <Route path="/host/guests" element={<Guests />} />
             <Route path="/host/blocked-numbers" element={<BlockedNumbers />} />
             <Route path="/host/profile" element={<HostProfile />} />

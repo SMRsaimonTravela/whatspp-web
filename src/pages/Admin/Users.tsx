@@ -2,16 +2,17 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import PageMeta from "../../components/common/PageMeta";
 import { adminService } from "../../services/adminService";
-import type {IUser, Pagination} from "../../types";
+import  {IUser} from "../../types";
 import { Modal } from "../../components/ui/modal";
 import { Drawer } from "../../components/ui/drawer";
 import { financeService } from "../../services/financeService";
 import { IHostFinancialDetails } from "../../types/finance";
 import toast from "react-hot-toast";
+import { IPagination } from "../../types/common";
 
 export default function Users() {
   const [users, setUsers] = useState<IUser[]>([]);
-  const [pagination, setPagination] = useState<Pagination | null>(null);
+  const [pagination, setPagination] = useState<IPagination | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("");

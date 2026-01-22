@@ -37,17 +37,17 @@ export const hostService = {
   },
 
   addFeedback: async (messageId: string, feedback: 'positive' | 'negative' | 'neutral', feedbackNote?: string): Promise<{ success: boolean }> => {
-    const response = await api.put(`/messages/${messageId}/feedback`, { feedback, feedbackNote });
+    const response = await api.patch(`/host/messages/${messageId}/feedback`, { feedback, feedbackNote });
     return response.data;
   },
 
   getMessageStats: async (): Promise<{ success: boolean; data: MessageStats }> => {
-    const response = await api.get('/messages/stats');
+    const response = await api.get('/host/messages/stats');
     return response.data;
   },
 
   // Guests
-  getGuests: async (params?: { page?: number; limit?: number; search?: string }): Promise<{
+  getGuests: async (params?: { page?: number; limit?: number; search?: string, id?: string }): Promise<{
     success: boolean;
     data: IGuest[];
     pagination: IPagination;
@@ -56,6 +56,11 @@ export const hostService = {
         label: string;
         placeholder: string;
         type: "string"
+      },
+      id: {
+        label: string,
+        placeholder: string,
+        type: 'string',
       }
     }
   }> => {

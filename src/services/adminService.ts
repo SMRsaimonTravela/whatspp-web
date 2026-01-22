@@ -11,8 +11,8 @@ import {
   IGuestsResponse, IConversationResponse
 } from '../types';
 import type { IAdminFeedbacksResponse } from '../types';
-import {IHostUser, IUserDetailResponse} from "../types/users.type";
-import {IPagination} from "../types/common.ts"; // Import IHostUser type
+import { IHostUser, IUserDetailResponse } from "../types/users.type";
+import { IPagination } from "../types/common.ts"; // Import IHostUser type
 
 
 export const adminService = {
@@ -141,8 +141,8 @@ export const adminService = {
       page: params?.page !== undefined ? Number(params.page) : 1,
       limit: params?.limit !== undefined ? Number(params.limit) : 100,
     };
-   const response= await api.get(`/admin/host/${hostId}/guests`, { params: safeParams });
-   return response.data
+    const response = await api.get(`/admin/host/${hostId}/guests`, { params: safeParams });
+    return response.data
   },
 
   getHostMessages: async (hostId: string, params?: MessagesQueryParams): Promise<MessagesResponse> => {
@@ -162,6 +162,11 @@ export const adminService = {
 
   getHostUsers: async (): Promise<{ success: boolean; data: IHostUser[] }> => {
     const response = await api.get('/admin/users/hosts');
+    return response.data;
+  },
+
+  addFeedback: async (userId: string, messageId: string, feedback: 'positive' | 'negative' | 'neutral', feedbackNote?: string): Promise<{ success: boolean }> => {
+    const response = await api.patch(`/admin/${userId}/messages/${messageId}/feedback`, { feedback, feedbackNote });
     return response.data;
   },
 };

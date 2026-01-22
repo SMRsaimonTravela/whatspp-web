@@ -34,7 +34,7 @@ const hostNavItems: NavItem[] = [
       </svg>
     ),
     name: "Messages",
-    path: "/host/messages",
+    path: "/host/conversation",
   },
   {
     icon: (
