@@ -1,6 +1,6 @@
 // Enums
 
-import {IUser} from "./index.ts";
+import { IHostUser } from "./users.type.ts";
 
 export type WithdrawalStatus = 'pending' | 'approved' | 'complete' | 'rejected';
 export type PaymentStatus = 'unpaid' | 'paid' | 'refunded';
@@ -50,9 +50,10 @@ export interface IWalletLedger {
 }
 
 export interface IWithdrawalRequest {
-    _id: string;
+    id: string;
     hostId: number;
-    userId:IUser;
+    userId: string;
+    user: IHostUser;
     amount: number;
     status: WithdrawalStatus;
     note?: string;

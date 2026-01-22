@@ -1,5 +1,6 @@
 import api from './api';
-import type { Message, MessageStats, Guest, BlockedNumber, Pagination } from '../types';
+import type { MessageStats, BlockedNumber, IMessage, IGuest } from '../types';
+import { IPagination } from '../types/common';
 
 // Session APIs
 export const hostService = {
@@ -21,20 +22,17 @@ export const hostService = {
     guestNumber?: string;
     startDate?: string;
     endDate?: string;
-  }): Promise<{ success: boolean; data: { messages: Message[]; pagination: Pagination } }> => {
-    const response = await api.get('/messages', { params });
+  }): Promise<{ success: boolean; data: { messages: IMessage[]; pagination: IPagination } }> => {
+    const response = await api.get('/host/messages', { params });
     return response.data;
   },
 
   getConversation: async (guestId: string, params?: { page?: number; limit?: number }): Promise<{
     success: boolean;
-    data: {
-      guest: Guest;
-      messages: Message[];
-      pagination: Pagination;
-    };
+    data: IMessage;
+    pagination: IPagination
   }> => {
-    const response = await api.get(`/messages/conversation/${guestId}`, { params });
+    const response = await api.get(`/host/messages/conversation/${guestId}`, { params });
     return response.data;
   },
 
@@ -51,25 +49,34 @@ export const hostService = {
   // Guests
   getGuests: async (params?: { page?: number; limit?: number; search?: string }): Promise<{
     success: boolean;
-    data: { guests: Guest[]; pagination: Pagination };
+    data: IGuest[];
+    pagination: IPagination;
+    filters: {
+      search: {
+        label: string;
+        placeholder: string;
+        type: "string"
+      }
+    }
   }> => {
-    const response = await api.get('/guests', { params });
+    const response = await api.get('/host/guests', { params });
     return response.data;
   },
 
-  updateGuest: async (guestId: string, data: { name?: string; originalNumber?: string }): Promise<{ success: boolean; data: Guest }> => {
-    const response = await api.put(`/guests/${guestId}`, data);
+  updateGuest: async (guestId: string, data: { name?: string; originalNumber?: string }): Promise<{ success: boolean; data: IGuest }> => {
+    const response = await api.put(`/host/guests/${guestId}`, data);
     return response.data;
   },
 
   toggleGuestAI: async (guestId: string, enabled: boolean): Promise<{ success: boolean; message: string; data: { aiAutoReplyEnabled: boolean } }> => {
-    const response = await api.put(`/guests/${guestId}/ai-toggle`, { enabled });
+    const response = await api.put(`/host/guests/${guestId}/ai-toggle`, { enabled });
     return response.data;
   },
 
   getGuestMessages: async (guestId: string, params?: { page?: number; limit?: number }): Promise<{
     success: boolean;
-    data: { messages: Message[]; pagination: Pagination };
+    data: IMessage;
+    pagination: IPagination
   }> => {
     const response = await api.get(`/guests/${guestId}/messages`, { params });
     return response.data;
@@ -78,7 +85,8 @@ export const hostService = {
   // Blocked Numbers
   getBlockedNumbers: async (params?: { page?: number; limit?: number; status?: string }): Promise<{
     success: boolean;
-    data: BlockedNumber[]; pagination: Pagination
+    data: BlockedNumber[];
+    pagination: IPagination
   }> => {
     const response = await api.get('/host/blocked-numbers', { params });
     return response.data;

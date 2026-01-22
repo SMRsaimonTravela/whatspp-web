@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import PageMeta from "../../components/common/PageMeta";
 import { hostService } from "../../services/hostService";
-import type { Message, Pagination } from "../../types";
+import type { IMessage } from "../../types";
+import { IPagination } from "../../types/common";
 
 export default function Messages() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [pagination, setPagination] = useState<Pagination | null>(null);
+  const [messages, setMessages] = useState<IMessage[]>([]);
+  const [pagination, setPagination] = useState<IPagination | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [searchNumber, setSearchNumber] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -164,7 +165,7 @@ export default function Messages() {
                 </thead>
                 <tbody>
                   {messages.map((message) => (
-                    <tr key={(message as any)._id} className="border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                    <tr key={(message as any).id} className="border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/50">
                       <td className="py-3 px-4">
                         <div>
                           <p className="text-sm font-medium text-gray-800 dark:text-white">

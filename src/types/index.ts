@@ -1,6 +1,6 @@
 // User Types
-import {IPagination} from "./common.ts";
-import {IHostUser} from "./users.type.ts";
+import { IPagination } from "./common.ts";
+import { IHostUser } from "./users.type.ts";
 
 export interface IUser {
   id: string;
@@ -72,11 +72,11 @@ export interface BlockedNumber {
   status: 'pending' | 'approved' | 'rejected';
   requestSource?: string;
   createdAt: string;
-  userId:string
+  userId: string
 }
 
-export interface IBlockNumbersAdmin extends  BlockedNumber{
-  user :IUser
+export interface IBlockNumbersAdmin extends BlockedNumber {
+  user: IUser
 }
 
 
@@ -153,13 +153,13 @@ export interface HostDetailResponse {
 // Updated GuestsResponse to match spec
 export interface IGuestsResponse {
   success: boolean;
-    data: IGuest[];
-    pagination: IPagination;
-    filter:{
-      search: {
-        label:string, placeholder:string, type:string
-      };
-    }
+  data: IGuest[];
+  pagination: IPagination;
+  filter: {
+    search: {
+      label: string, placeholder: string, type: string
+    };
+  }
 }
 
 // Updated MessagesResponse to match spec
@@ -173,7 +173,7 @@ export interface MessagesResponse {
 
 export interface IConversationResponse {
   success: boolean;
-  data:IMessage[]
+  data: IMessage[]
   pagination: IPagination;
 }
 
@@ -223,8 +223,8 @@ export interface IAdminFeedbacksResponse {
 }
 
 export interface IMessage {
-  _id: string;
-  hostId: string;
+  id: string;
+  userId: string;
   guestId: string;
   guestNumber: string;
   prompt: string;
