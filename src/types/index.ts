@@ -205,7 +205,7 @@ export interface IAnalyticsData {
   hostUsers: number;
   pendingUsers: number;
   pendingBlockRequests: number;
-  bookingRequests: number;
+  totalBookings: number;
   todayMessages: number;
   totalMessages: number;
 }

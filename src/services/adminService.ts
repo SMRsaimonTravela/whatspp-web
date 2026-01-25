@@ -8,11 +8,11 @@ import {
   GuestsQueryParams,
   MessagesQueryParams,
   IBlockNumbersAdmin,
-  IGuestsResponse, IConversationResponse
+  IGuestsResponse, IConversationResponse, IAnalyticsApiResponse
 } from '../types';
 import type { IAdminFeedbacksResponse } from '../types';
 import { IHostUser, IUserDetailResponse } from "../types/users.type";
-import { IPagination } from "../types/common.ts"; // Import IHostUser type
+import { IPagination } from "../types/common.ts";
 
 
 export const adminService = {
@@ -41,7 +41,7 @@ export const adminService = {
 
 
   getPendingUsers: async (): Promise<{ success: boolean; data: IUser[] }> => {
-    const response = await api.get('/admin/users/pending');
+    const response = await api.get('/admin/pending-users');
     return response.data;
   },
 
@@ -74,6 +74,16 @@ export const adminService = {
 
   deleteUser: async (userId: string): Promise<{ success: boolean }> => {
     const response = await api.delete(`/users/${userId}`);
+    return response.data;
+  },
+
+  /**
+   * Update host ID for a user
+   * @param id user id
+   * @param hostId new host id
+   */
+  updateUserHostId: async (id: string, hostId: string): Promise<{ success: boolean; data: any }> => {
+    const response = await api.patch(`/admin/users/${id}/host-id`, { hostId });
     return response.data;
   },
 
@@ -155,13 +165,13 @@ export const adminService = {
     return response.data;
   },
 
-  getAnalytics: async (): Promise<import('../types').IAnalyticsApiResponse> => {
+  getAnalytics: async (): Promise<IAnalyticsApiResponse> => {
     const response = await api.get('/admin/analytics');
     return response.data;
   },
 
-  getHostUsers: async (): Promise<{ success: boolean; data: IHostUser[] }> => {
-    const response = await api.get('/admin/users/hosts');
+  getHostUsers: async (params?: { page?: number; limit?: number }): Promise<{ success: boolean; data: IHostUser[]; pagination: IPagination }> => {
+    const response = await api.get('/admin/users/hosts', { params });
     return response.data;
   },
 
@@ -171,13 +181,15 @@ export const adminService = {
   },
 };
 
-export const getAdminFeedbacks = async (): Promise<IAdminFeedbacksResponse> => {
-  const response = await api.get('/admin/messages/feedbacks');
+export const getAdminFeedbacks = async (params?: { page?: number; limit?: number }): Promise<IAdminFeedbacksResponse> => {
+  const response = await api.get('/admin/messages/feedbacks', { params });
   return response.data;
 };
 
 export const resolveAdminFeedback = async (id: string) => {
-  return api.patch(`/admin/feedback/${id}/resolve`);
+  return api.patch(`/admin/messages/feedbacks/${id}/resolve`);
 };
+
+
 
 export default adminService;

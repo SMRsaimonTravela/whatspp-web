@@ -9,6 +9,7 @@ import { ChatHeader } from "../../components/chat/ChatHeader";
 import { ChatMessages } from "../../components/chat/ChatMessages";
 import { Modal } from "../../components/ui/modal";
 import { IPagination } from "../../types/common";
+import SwitchToggle from '../../components/common/SwitchToggle';
 
 export default function Conversation() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -359,22 +360,17 @@ export default function Conversation() {
                   onBack={() => setShowMobileView("guests")}
                   actions={
                     <div className="flex items-center gap-2">
-                      <button
-                        onClick={handleToggleGuestAI}
-                        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${selectedGuest.aiAutoReplyEnabled
-                          ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                          : "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
-                          }`}
-                        title={`AI ${selectedGuest.aiAutoReplyEnabled ? "Enabled" : "Disabled"}`}
-                      >
-                        🤖 AI {selectedGuest.aiAutoReplyEnabled ? "ON" : "OFF"}
-                      </button>
+                      <SwitchToggle
+                        checked={selectedGuest.aiAutoReplyEnabled}
+                        onChange={handleToggleGuestAI}
+                        className="h-7 w-12"
+                      />
                       <button
                         onClick={handleOpenBlockModal}
                         className="px-3 py-1.5 rounded-lg text-sm font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
                         title="Request block"
                       >
-                        🚫 Block
+                        🚫 Block Request
                       </button>
                     </div>
                   }

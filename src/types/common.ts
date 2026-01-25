@@ -1,3 +1,5 @@
+import { ICommonFilters} from "./filters";
+
 export interface IPagination {
     current_page: number;
     from: number;
@@ -7,6 +9,7 @@ export interface IPagination {
     total: number;
 }
 
+
 export interface FilterOption {
   label: string;
   value: string | number | boolean;
@@ -15,40 +18,38 @@ export interface FilterOption {
 export interface FilterDefinition {
   name: string;
   label: string;
-  type: 'select' | 'text' | 'daterange' | string;
+  type: 'select' | 'text' | 'daterange' | 'number' | 'multiselect' | 'radio' | string;
   options?: FilterOption[];
+  values?: FilterOption[]; // for radio, select, multiselect
   placeholder?: string;
+  required?: boolean;
+  data?: 'external' | string;
+  resource?: string;
+  // Allow any extra properties for future-proofing
+  [key: string]: any;
 }
 
-export type APIFilterValue = FilterOption;
 
-export type APIFilter = {
-  label: string;
-  placeholder?: string;
-  type: 'string' | 'select' | 'daterange' | string;
-  values?: APIFilterValue[];
-};
 
-export type APIFilters = Record<string, APIFilter>;
-
-export function mapAPIFiltersToDefinitions(apiFilters: APIFilters): FilterDefinition[] {
+export function mapAPIFiltersToDefinitions(apiFilters: ICommonFilters): FilterDefinition[] {
   return Object.entries(apiFilters).map(([name, filter]) => {
     const type: FilterDefinition['type'] = filter.type === 'string' ? 'text' : filter.type;
-    return {
+    const definition: FilterDefinition = {
       name,
       label: filter.label,
       type,
-      options: filter.values,
       placeholder: filter.placeholder,
     };
+    if ('values' in filter && Array.isArray(filter.values)) {
+      definition.options = filter.values;
+    }
+    if ('data' in filter && filter.data) {
+      definition.data = filter.data;
+    }
+    if ('resource' in filter && filter.resource) {
+      definition.resource = filter.resource;
+    }
+    return definition;
   });
 }
 
-export function normalizePagination(pagination: IPagination) {
-  return {
-    page: pagination.current_page,
-    totalPages: pagination.last_page,
-    total: pagination.total,
-    limit: pagination.per_page,
-  };
-}

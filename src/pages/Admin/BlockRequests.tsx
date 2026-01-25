@@ -1,14 +1,16 @@
 import {useCallback, useEffect, useState} from "react";
 import PageMeta from "../../components/common/PageMeta";
 import {adminService} from "../../services/adminService";
-import type {IBlockNumbersAdmin, Pagination} from "../../types";
+import type {IBlockNumbersAdmin} from "../../types";
 import toast from "react-hot-toast";
 import {useModal} from "../../hooks/useModal";
 import ConfirmationModal from "../../components/ui/ConfirmationModal";
+import {IPagination} from "../../types/common.ts";
+import CommonPagination from "../../components/common/CommonPagination.tsx";
 
 export default function BlockRequests() {
     const [requests, setRequests] = useState<IBlockNumbersAdmin[]>([]);
-    const [pagination, setPagination] = useState<Pagination | null>(null);
+    const [pagination, setPagination] = useState<IPagination | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
 
@@ -223,29 +225,11 @@ export default function BlockRequests() {
                     )}
 
                     {/* Pagination */}
-                    {pagination && pagination.totalPages > 1 && (
-                        <div
-                            className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-                            <p className="text-sm text-gray-500 dark:text-gray-400">
-                                Page {currentPage} of {pagination.totalPages}
-                            </p>
-                            <div className="flex items-center gap-2">
-                                <button
-                                    onClick={() => setCurrentPage(currentPage - 1)}
-                                    disabled={currentPage === 1}
-                                    className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-sm disabled:opacity-50"
-                                >
-                                    Previous
-                                </button>
-                                <button
-                                    onClick={() => setCurrentPage(currentPage + 1)}
-                                    disabled={currentPage === pagination.totalPages}
-                                    className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-sm disabled:opacity-50"
-                                >
-                                    Next
-                                </button>
-                            </div>
-                        </div>
+                    {pagination && pagination.total > 1 && (
+                        <CommonPagination
+                            pagination={pagination}
+                            onPageChange={setCurrentPage}
+                        />
                     )}
                 </div>
             </div>

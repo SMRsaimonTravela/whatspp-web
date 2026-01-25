@@ -1,6 +1,4 @@
-import type {  IAssignedUser } from "../types/users.type";
-
-// Commission rule and assigned user interfaces for admin commission rules
+import type {  IAssignedUser } from "./users.type.ts";
 
 export interface ICommissionRule {
   id: string;

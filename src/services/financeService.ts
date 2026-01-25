@@ -1,15 +1,13 @@
 import api from './api';
 import {
-    IBooking,
     IWithdrawalRequest,
     IHostFinancialDetails,
     IWalletLedger,
     IWallet,
     IWalletHistoryResponse, IWithdrawalsResponse
 } from '../types/finance';
-
-import { IPagination, APIFilters } from '../types/common';
 import {ICommissionRule} from "../types/commission.ts";
+import {IBookingResponse} from "../types/booking";
 
 // --- HOST APIs ---
 
@@ -46,19 +44,22 @@ export const getHostWalletHistory = async (page = 1): Promise<IWalletHistoryResp
 export const getHostBookings = async (
     page = 1,
     filters: Record<string, string | number | boolean> = {}
-): Promise<{
-    bookings: IBooking[];
-    filters: APIFilters;
-    pagination: IPagination;
-}> => {
+): Promise<IBookingResponse> => {
     const res = await api.get('/host/bookings', {
         params: { page, ...filters }
     });
-    return {
-        bookings: res.data.data || [],
-        filters: res.data.filters || {},
-        pagination: res.data.pagination || {}
-    };
+    return res.data
+};
+
+/** Get global bookings list with admin filters */
+export const getAdminBookings = async (
+    page = 1,
+    filters: Record<string, string | number | boolean> = {}
+): Promise<IBookingResponse> => {
+    const res = await api.get('/admin/bookings', {
+        params: { page, ...filters }
+    });
+    return res.data
 };
 
 /** Request a new withdrawal */
@@ -86,13 +87,6 @@ export const getCommissionRules = async (): Promise<ICommissionRule[]> => {
     const res:{data: {data:ICommissionRule[]}} = await api.get('/admin/commission-rules');
     return res.data.data;
 };
-
-/** Get global bookings list with admin filters */
-export const getAdminBookings = async (options?: { hostId?: number; bookingId?: string; page?: number }) => {
-    const res = await api.get('/admin/bookings', { params: options });
-    return res.data.data as { bookings: IBooking[]; total: number };
-};
-
 /** Get all withdrawal requests by status */
 export const getAdminWithdrawals = async (status?: string, page = 1) => {
     const res = await api.get('/admin/wallet/withdrawals', { params: { status, page } });

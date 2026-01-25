@@ -1,4 +1,5 @@
 import { IWalletUser } from './finance';
+import {IBookingFilters} from "./filters";
 
 export interface IBooking {
   id: string;
@@ -17,32 +18,6 @@ export interface IBooking {
   updatedAt: string;
 }
 
-export interface IBookingFilterValue {
-  label: string;
-  value: string;
-}
-
-export type IBookingFilterField =
-  | {
-      label: string;
-      placeholder: string;
-      type: 'string';
-    }
-  | {
-      label: string;
-      placeholder: string;
-      type: 'select';
-      values: IBookingFilterValue[];
-    }
-  | {
-      label: string;
-      placeholder: string;
-      type: 'daterange';
-    };
-
-export type IBookingFilters = {
-  [query: string]: IBookingFilterField;
-};
 
 export interface IBookingResponse {
   success: boolean;
@@ -50,13 +25,6 @@ export interface IBookingResponse {
   data: IBooking[];
   meta?: Record<string, any>;
   filters: IBookingFilters;
-  pagination: {
-    current_page: number;
-    from: number;
-    last_page: number;
-    per_page: number;
-    to: number;
-    total: number;
-  };
+  pagination:IPagination;
 }
 

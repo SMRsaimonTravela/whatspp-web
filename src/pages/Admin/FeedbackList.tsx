@@ -1,29 +1,24 @@
 import React, { useEffect, useState, useCallback } from "react";
 import toast from "react-hot-toast";
 import { getAdminFeedbacks, resolveAdminFeedback } from "../../services/adminService";
-import {IMessage } from "../../types";
+import { IMessage } from "../../types";
 import { useSocket } from "../../context/SocketContext";
 import FeedbackBadge from "../../components/ui/badge/FeedbackBadge";
-
-interface Pagination {
-  page: number;
-  limit: number;
-  total: number;
-}
+import CommonPagination from '../../components/common/CommonPagination';
+import {IPagination} from "../../types/common.ts";
 
 const FeedbackList: React.FC = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
-  const [pagination, setPagination] = useState<Pagination | null>(null);
+  const [pagination, setPagination] = useState<IPagination | null>(null);
   const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [limit] = useState(50);
+  const [resolving, setResolving] = useState<{ [id: string]: boolean }>({});
   const socket = useSocket();
 
-  const fetchFeedbacks = useCallback(async () => {
+  const fetchFeedbacks = useCallback(async (page = 1) => {
     setLoading(true);
     try {
-      const res = await getAdminFeedbacks();
-
-      console.log(res,"res")
+      const res = await getAdminFeedbacks({ page, limit });
       setMessages(res.data);
       setPagination(res.pagination);
     } catch {
@@ -31,16 +26,15 @@ const FeedbackList: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [limit]);
 
   useEffect(() => {
-    fetchFeedbacks();
+    fetchFeedbacks(1);
   }, [fetchFeedbacks]);
 
   useEffect(() => {
-    if(!socket) return
+    if (!socket) return
     socket.on("connect", () => {
-      console.log("✅ connected", socket.id);
     });
     socket.on("feedback:update", fetchFeedbacks);
     return () => {
@@ -50,6 +44,10 @@ const FeedbackList: React.FC = () => {
 
   const formatDate = (dateString: string) => {
     return dateString ? new Date(dateString).toLocaleString() : "-";
+  };
+
+  const handlePageChange = (page: number) => {
+    fetchFeedbacks(page);
   };
 
   return (
@@ -78,7 +76,7 @@ const FeedbackList: React.FC = () => {
             </thead>
             <tbody>
               {messages.map((fb) => (
-                <tr key={fb._id} className="border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                <tr key={fb.id} className="border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/50">
                   <td className="py-3 px-4">{fb.guestNumber}</td>
                   <td className="py-3 px-4">{fb.prompt}</td>
                   <td className="py-3 px-4"><FeedbackBadge feedback={fb.feedback} /></td>
@@ -86,7 +84,24 @@ const FeedbackList: React.FC = () => {
                   <td className="py-3 px-4">{fb.feedbackResolvedAt && formatDate(fb.feedbackResolvedAt)}</td>
                   <td className="py-3 px-4">
                     {fb.feedback === "negative" && !fb.feedbackResolvedAt && (
-                      <button onClick={() => resolveAdminFeedback(fb._id).then(fetchFeedbacks)} className="bg-brand-500 text-white px-3 py-1 rounded hover:bg-brand-600">Resolve</button>
+                      <button
+                        onClick={async () => {
+                          setResolving((r) => ({ ...r, [fb.id]: true }));
+                          try {
+                            await resolveAdminFeedback(fb.id);
+                            toast.success("Feedback resolved");
+                            fetchFeedbacks();
+                          } catch {
+                            toast.error("Failed to resolve feedback");
+                          } finally {
+                            setResolving((r) => ({ ...r, [fb.id]: false }));
+                          }
+                        }}
+                        className="bg-brand-500 text-white px-3 py-1 rounded hover:bg-brand-600 disabled:opacity-50"
+                        disabled={!!resolving[fb.id]}
+                      >
+                        {resolving[fb.id] ? 'Resolving...' : 'Resolve'}
+                      </button>
                     )}
                   </td>
                 </tr>
@@ -96,31 +111,12 @@ const FeedbackList: React.FC = () => {
         </div>
       )}
       {/* Pagination */}
-      {pagination && pagination.total > pagination.limit && (
-        <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} feedbacks
-          </p>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setCurrentPage(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
-            >
-              Previous
-            </button>
-            <span className="text-sm text-gray-700 dark:text-gray-300">
-              Page {pagination.page} of {Math.ceil(pagination.total / pagination.limit)}
-            </span>
-            <button
-              onClick={() => setCurrentPage(currentPage + 1)}
-              disabled={pagination.page === Math.ceil(pagination.total / pagination.limit)}
-              className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
-            >
-              Next
-            </button>
-          </div>
-        </div>
+      {pagination && (
+        <CommonPagination
+          pagination={pagination}
+          onPageChange={handlePageChange}
+          className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200 dark:border-gray-700"
+        />
       )}
     </div>
   );

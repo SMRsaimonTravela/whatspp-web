@@ -6,6 +6,10 @@ import { Modal } from "../../components/ui/modal";
 import toast from "react-hot-toast";
 import { IGuest } from "../../types";
 import { IPagination } from "../../types/common";
+import SwitchToggle from '../../components/common/SwitchToggle';
+import { Dropdown } from "../../components/ui/dropdown/Dropdown";
+import { ChevronDown, ChevronUp, Pencil, MessageCircle } from "lucide-react";
+import CommonPagination from "../../components/common/CommonPagination";
 
 export default function Guests() {
   const [guests, setGuests] = useState<IGuest[]>([]);
@@ -15,6 +19,7 @@ export default function Guests() {
   const [currentPage, setCurrentPage] = useState(1);
   const [editingGuest, setEditingGuest] = useState<IGuest | null>(null);
   const [editForm, setEditForm] = useState({ name: "", originalNumber: "" });
+  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
 
   useEffect(() => {
     loadGuests();
@@ -86,6 +91,13 @@ export default function Guests() {
     return new Date(dateString).toLocaleString();
   };
 
+  const handleDropdownToggle = (guestId: string) => {
+    setOpenDropdownId(prev => (prev === guestId ? null : guestId));
+  };
+  const handleDropdownClose = () => {
+    setOpenDropdownId(null);
+  };
+
   return (
     <>
       <PageMeta
@@ -145,65 +157,70 @@ export default function Guests() {
                   </tr>
                 </thead>
                 <tbody>
-                  {guests.map((guest) => (
-                    <tr key={guest.id} className="border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                      <td className="py-3 px-4">
-                        <p className="text-sm font-medium text-gray-800 dark:text-white">
-                          {guest.name || guest.notifyName || "Unknown"}
-                        </p>
-                      </td>
-                      <td className="py-3 px-4">
-                        <p className="text-sm text-gray-700 dark:text-gray-300 font-mono">
-                          {guest.whatsappNumber}
-                        </p>
-                      </td>
-                      <td className="py-3 px-4">
-                        <p className="text-sm text-gray-700 dark:text-gray-300">
-                          {guest.originalNumber || "-"}
-                        </p>
-                      </td>
-                      <td className="py-3 px-4">
-                        <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-brand-100 text-brand-700 dark:bg-brand-500/20 dark:text-brand-400">
-                          {guest.totalMessages}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4">
-                        <button
-                          onClick={() => handleToggleAI(guest)}
-                          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                            guest.aiAutoReplyEnabled ? "bg-brand-500" : "bg-gray-300 dark:bg-gray-600"
-                          }`}
-                        >
-                          <span
-                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                              guest.aiAutoReplyEnabled ? "translate-x-6" : "translate-x-1"
-                            }`}
+                  {guests.map((guest, idx) => {
+                    const dropUp = idx >= guests.length - 2;
+                    return (
+                      <tr key={guest.id} className="border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                        <td className="py-3 px-4">
+                          <p className="text-sm font-medium text-gray-800 dark:text-white">
+                            {guest.name || guest.notifyName || "Unknown"}
+                          </p>
+                        </td>
+                        <td className="py-3 px-4">
+                          <p className="text-sm text-gray-700 dark:text-gray-300 font-mono">
+                            {guest.whatsappNumber}
+                          </p>
+                        </td>
+                        <td className="py-3 px-4">
+                          <p className="text-sm text-gray-700 dark:text-gray-300">
+                            {guest.originalNumber || "-"}
+                          </p>
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-brand-100 text-brand-700 dark:bg-brand-500/20 dark:text-brand-400">
+                            {guest.totalMessages}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4">
+                          <SwitchToggle
+                            checked={guest.aiAutoReplyEnabled}
+                            onChange={() => handleToggleAI(guest)}
                           />
-                        </button>
-                      </td>
-                      <td className="py-3 px-4">
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          {formatDate(guest.lastMessageAt)}
-                        </p>
-                      </td>
-                      <td className="py-3 px-4">
-                        <div className="flex items-center gap-2">
+                        </td>
+                        <td className="py-3 px-4">
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            {formatDate(guest.lastMessageAt)}
+                          </p>
+                        </td>
+                        <td className="py-3 px-4 relative">
                           <button
-                            onClick={() => handleEditGuest(guest)}
-                            className="text-brand-500 hover:text-brand-600 text-sm font-medium"
+                            className="dropdown-toggle px-2 py-1 rounded bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 flex items-center gap-1"
+                            onClick={() => handleDropdownToggle(guest.id)}
                           >
-                            Edit
+                            Actions
+                            {openDropdownId === guest.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                           </button>
-                          <Link
-                            to={`/host/conversation?guestId=${encodeURIComponent(guest.id)}`}
-                            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 text-sm"
-                          >
-                            View Messages
-                          </Link>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                          <Dropdown isOpen={openDropdownId === guest.id} onClose={handleDropdownClose} dropUp={dropUp}>
+                            <button
+                              onClick={() => { handleEditGuest(guest); handleDropdownClose(); }}
+                              className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                            >
+                              <Pencil size={16} className="inline-block align-middle" />
+                              Edit
+                            </button>
+                            <Link
+                              to={`/host/conversation?guestId=${encodeURIComponent(guest.id)}`}
+                              className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 whitespace-nowrap"
+                              onClick={handleDropdownClose}
+                            >
+                              <MessageCircle size={16} className="inline-block align-middle mr-2" />
+                              <span className="inline-block align-middle">View Messages</span>
+                            </Link>
+                          </Dropdown>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -211,30 +228,11 @@ export default function Guests() {
 
           {/* Pagination */}
           {pagination && pagination.last_page > 1 && (
-            <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Showing {((currentPage - 1) * pagination.per_page) + 1} to {Math.min(currentPage * pagination.per_page, pagination.total)} of {pagination.total} guests
-              </p>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setCurrentPage(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
-                >
-                  Previous
-                </button>
-                <span className="text-sm text-gray-700 dark:text-gray-300">
-                  Page {currentPage} of {pagination.last_page}
-                </span>
-                <button
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                  disabled={currentPage === pagination.last_page}
-                  className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
-                >
-                  Next
-                </button>
-              </div>
-            </div>
+            <CommonPagination
+              pagination={pagination}
+              onPageChange={setCurrentPage}
+              className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200 dark:border-gray-700"
+            />
           )}
         </div>
       </div>

@@ -1,6 +1,6 @@
 import api from './api';
-import { WhatsAppStatusValue } from '../constants/whatsapp';
-import {ISessionsResponse} from "../types/session";
+import { WhatsAppStatus } from '../constants/whatsapp';
+import {ISessionsResponse, ISessionStatus} from "../types/session";
 
 export interface WhatsAppStatus {
     sessionId: string;
@@ -39,6 +39,11 @@ export const whatsappService = {
     getAllSessions: async (): Promise<ISessionsResponse> => {
         const response:{data:ISessionsResponse} = await api.get('/admin/whatsapp/sessions');
         return response.data;
+    },
+    // Admin: Get active  sessions
+    getActiveSessions: async (): Promise<ISessionStatus[]> => {
+        const response:{data:ISessionsResponse} = await api.get('/admin/whatsapp/sessions');
+        return response.data.data.filter(x=>x.status === WhatsAppStatus.READY);
     },
 
     // Admin: Restart session

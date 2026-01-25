@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import PageMeta from "../../components/common/PageMeta";
 import { adminService } from "../../services/adminService";
 import type { IAnalyticsData } from "../../types";
+import whatsappService from "../../services/whatsapp.service.ts";
 
 export default function AdminDashboard() {
   const [analytics, setAnalytics] = useState<IAnalyticsData | null>(null);
@@ -17,10 +18,10 @@ export default function AdminDashboard() {
     try {
       const [analyticsRes, sessionsRes] = await Promise.all([
         adminService.getAnalytics(),
-        adminService.getActiveSessions(),
+        whatsappService.getActiveSessions(),
       ]);
       setAnalytics(analyticsRes.data);
-      setActiveSessions(sessionsRes.data.count);
+      setActiveSessions(sessionsRes.length);
     } catch (error) {
       console.error("Failed to load dashboard stats:", error);
     } finally {
@@ -150,9 +151,9 @@ export default function AdminDashboard() {
           <div className="rounded-2xl bg-white p-6 dark:bg-gray-800 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Booking Requests</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Booking</p>
                 <h3 className="text-2xl font-bold text-gray-800 dark:text-white mt-1">
-                  {analytics?.bookingRequests ?? 0}
+                  {analytics?.totalBookings ?? 0}
                 </h3>
               </div>
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-500/20">

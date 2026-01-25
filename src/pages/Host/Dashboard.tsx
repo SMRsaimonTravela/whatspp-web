@@ -189,7 +189,7 @@ export default function HostDashboard() {
             </Link>
 
             <Link
-              to="/host/messages"
+              to="/host/conversation"
               className="flex items-center gap-3 p-4 rounded-xl bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
             >
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-100 dark:bg-brand-500/20">

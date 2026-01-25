@@ -9,10 +9,10 @@ import { IPagination } from '../../types/finance';
 import { IBookingFilters } from '../../types/filters.d';
 import CommonPagination from "../../components/common/CommonPagination";
 
-export default function HostBookingsPage() {
+export default function AdminBookings() {
     const [queryState, setQueryState] = useState<{
         page: number;
-        filters: Record<string, string | number | boolean>;
+        filters: Record<string, unknown>;
     }>({
         page: 1,
         filters: {}
@@ -22,16 +22,15 @@ export default function HostBookingsPage() {
         data,
         isLoading
     } = useQuery<IBookingResponse>({
-        queryKey: ['host-bookings', queryState.page, queryState.filters],
-        queryFn: () => financeService.getHostBookings(queryState.page, queryState.filters),
+        queryKey: ['admin-bookings', queryState.page, queryState.filters],
+        queryFn: () => financeService.getAdminBookings(queryState.page, queryState.filters),
     });
 
     const filters: IBookingFilters = data?.filters ?? ({} as IBookingFilters);
     const pagination: IPagination | undefined = data?.pagination;
     const bookings: IBooking[] = data?.data || [];
 
-    // Handle filter and pagination changes
-    const handleFilterChange = (newFilters: Record<string, string | number | boolean>) => {
+    const handleFilterChange = (newFilters: Record<string, unknown>) => {
         setQueryState({ page: 1, filters: newFilters });
     };
     const handlePageChange = (newPage: number) => {
@@ -70,10 +69,10 @@ export default function HostBookingsPage() {
 
     return (
         <>
-            <PageMeta title="Bookings | Host Dashboard" description="View and manage your bookings" />
+            <PageMeta title="Bookings | Admin Dashboard" description="View and manage all bookings" />
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                    <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">Booking Management</h1>
+                    <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">All Bookings</h1>
                 </div>
                 {/* Dynamic Filters */}
                 {filters && Object.keys(filters).length > 0 && (

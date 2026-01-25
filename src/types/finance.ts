@@ -9,24 +9,6 @@ export type LedgerDirection = 'credit' | 'debit';
 export type CommissionScope = 'global' | 'host';
 export type CommissionType = 'percentage' | 'fixed';
 
-// Models
-export interface IBooking {
-    bookingId: string;
-    hostId: number;
-    userId: string | null;
-    guestId: number;
-    guestName: string;
-    guestPhone: string;
-    amount: number;
-    paidAmount: number;
-    paymentStatus: PaymentStatus;
-    commission?: {
-        amount: number;
-        ruleId?: string;
-        calculatedAt: string;
-    };
-    createdAt: string;
-}
 
 export interface IHostWallet {
     hostId: number;

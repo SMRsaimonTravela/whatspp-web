@@ -69,12 +69,12 @@ export const hostService = {
   },
 
   updateGuest: async (guestId: string, data: { name?: string; originalNumber?: string }): Promise<{ success: boolean; data: IGuest }> => {
-    const response = await api.put(`/host/guests/${guestId}`, data);
+    const response = await api.patch(`/host/guests/${guestId}`, data);
     return response.data;
   },
 
   toggleGuestAI: async (guestId: string, enabled: boolean): Promise<{ success: boolean; message: string; data: { aiAutoReplyEnabled: boolean } }> => {
-    const response = await api.put(`/host/guests/${guestId}/ai-toggle`, { enabled });
+    const response = await api.patch(`/host/guests/${guestId}/ai-toggle`, { enabled });
     return response.data;
   },
 
