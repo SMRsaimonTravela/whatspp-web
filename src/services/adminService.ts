@@ -53,17 +53,17 @@ export const adminService = {
     password: string;
     userType: 'host' | 'admin';
   }): Promise<{ success: boolean; data: IUser }> => {
-    const response = await api.post('/users', data);
+    const response = await api.post('/admin/users/host', data);
     return response.data;
   },
 
-  createAdmin: async (data: { name?: string; email: string; password: string }): Promise<{ success: boolean; data: IUser }> => {
-    const response = await api.post('/users/admin', data);
+  createAdmin: async (data: { name?: string; email: string; password: string; whatsappNumber:string }): Promise<{ success: boolean; data: IUser }> => {
+    const response = await api.post('/admin/users/admin', data);
     return response.data;
   },
 
   approveUser: async (userId: string): Promise<{ success: boolean; message: string }> => {
-    const response = await api.put(`/users/${userId}/approve`);
+    const response = await api.put(`/admin/users/${userId}/approve`);
     return response.data;
   },
 
@@ -73,7 +73,7 @@ export const adminService = {
   },
 
   deleteUser: async (userId: string): Promise<{ success: boolean }> => {
-    const response = await api.delete(`/users/${userId}`);
+    const response = await api.delete(`/admin/users/${userId}`);
     return response.data;
   },
 
@@ -84,6 +84,14 @@ export const adminService = {
    */
   updateUserHostId: async (id: string, hostId: string): Promise<{ success: boolean; data: any }> => {
     const response = await api.patch(`/admin/users/${id}/host-id`, { hostId });
+    return response.data;
+  },
+
+  /**
+   * Reset a user's password
+   */
+  resetUserPassword: async (userId: string, password: string): Promise<{ success: boolean; message: string }> => {
+    const response = await api.patch(`/admin/users/${userId}/password`, { password });
     return response.data;
   },
 

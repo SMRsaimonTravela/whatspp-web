@@ -86,6 +86,8 @@ export default function App() {
             <Route index path="/admin" element={<AdminDashboard />} />
             <Route path={"/admin/bookings"}  element={<AdminBookings />} />
             <Route path="/admin/users" element={<Users />} />
+            {/*/admin/profile*/}
+            <Route path="/admin/profile" element={<HostProfile />} />
             <Route path="/admin/users/pending" element={<PendingApprovals />} />
             <Route path="/admin/host-users" element={<HostUsersPage/>} />
             <Route path="/admin/block-requests" element={<BlockRequests />} />

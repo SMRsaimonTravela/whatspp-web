@@ -1,5 +1,5 @@
 import api from './api';
-import type { AuthResponse, RegisterResponse, User } from '../types';
+import type {AuthResponse, IUser, RegisterResponse} from '../types';
 
 interface LoginPayload {
   emailOrPhone: string;
@@ -35,12 +35,12 @@ export const authService = {
     return response.data;
   },
 
-  getMe: async (): Promise<{ success: boolean; data: User }> => {
+  getMe: async (): Promise<{ success: boolean; data: IUser }> => {
     const response = await api.get('/auth/me');
     return response.data;
   },
 
-  updateProfile: async (payload: UpdateProfilePayload): Promise<{ success: boolean; data: User }> => {
+  updateProfile: async (payload: UpdateProfilePayload): Promise<{ success: boolean; data: IUser; message:string }> => {
     const response = await api.patch('/auth/profile', payload);
     return response.data;
   },

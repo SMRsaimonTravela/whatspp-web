@@ -1,5 +1,5 @@
 import api from './api';
-import type { MessageStats, BlockedNumber, IMessage, IGuest } from '../types';
+import {MessageStats, BlockedNumber, IMessage, IGuest, IAnalyticsApiResponse} from '../types';
 import { IPagination } from '../types/common';
 
 // Session APIs
@@ -11,7 +11,7 @@ export const hostService = {
   },
 
   toggleAI: async (enabled: boolean): Promise<{ success: boolean; message: string }> => {
-    const response = await api.put('/host/ai-toggle', { enabled });
+    const response = await api.patch('/host/ai-toggle', { enabled });
     return response.data;
   },
 
@@ -43,6 +43,10 @@ export const hostService = {
 
   getMessageStats: async (): Promise<{ success: boolean; data: MessageStats }> => {
     const response = await api.get('/host/messages/stats');
+    return response.data;
+  },
+  getAnalytics: async (): Promise<IAnalyticsApiResponse> => {
+    const response = await api.get('/host/analytics');
     return response.data;
   },
 

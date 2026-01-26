@@ -208,6 +208,7 @@ export interface IAnalyticsData {
   totalBookings: number;
   todayMessages: number;
   totalMessages: number;
+  totalGuests:number
 }
 
 export interface IAnalyticsApiResponse {

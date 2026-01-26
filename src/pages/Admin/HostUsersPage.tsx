@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 import { Dropdown } from "../../components/ui/dropdown/Dropdown";
 import CommonPagination from "../../components/common/CommonPagination";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import {IPagination} from "../../types/common.ts";
 
 export default function HostUsersPage() {
   const [users, setUsers] = useState<IHostUser[]>([]);
@@ -18,7 +19,7 @@ export default function HostUsersPage() {
   const [hostIdInput, setHostIdInput] = useState("");
   const [updateLoading, setUpdateLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pagination, setPagination] = useState(null);
+  const [pagination, setPagination] = useState<IPagination | null>(null);
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -30,7 +31,7 @@ export default function HostUsersPage() {
     try {
       const res = await adminService.getHostUsers({ page, limit: 10 });
       setUsers(res.data || []);
-      setPagination(res.pagination || null);
+      setPagination(res.pagination);
     } finally {
       setIsLoading(false);
     }

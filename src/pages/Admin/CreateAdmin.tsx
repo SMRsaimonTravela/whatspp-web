@@ -9,11 +9,12 @@ interface CreateAdminFormData {
   email: string;
   password: string;
   confirmPassword: string;
+  whatsappNumber: string;
 }
 
 export default function CreateAdmin() {
   const [isLoading, setIsLoading] = useState(false);
-  const [createdAdmin, setCreatedAdmin] = useState<{ name: string; email: string } | null>(null);
+  const [createdAdmin, setCreatedAdmin] = useState<{ name: string; email: string; whatsappNumber: string } | null>(null);
 
   const {
     register,
@@ -32,12 +33,14 @@ export default function CreateAdmin() {
         name: data.name || undefined,
         email: data.email,
         password: data.password,
+        whatsappNumber: data.whatsappNumber,
       });
       if (response.success) {
         toast.success("Admin created successfully");
         setCreatedAdmin({
           name: response.data.name || data.email,
           email: response.data.email,
+          whatsappNumber: response.data.whatsappNumber || data.whatsappNumber,
         });
         reset();
       }
@@ -120,6 +123,29 @@ export default function CreateAdmin() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  WhatsApp Number <span className="text-error-500">*</span>
+                </label>
+                <input
+                  type="tel"
+                  {...register("whatsappNumber", {
+                    required: "WhatsApp number is required",
+                    pattern: {
+                      value: /^\+?[0-9]{7,15}$/,
+                      message: "Invalid WhatsApp number",
+                    },
+                  })}
+                  className={`w-full h-11 rounded-lg border ${
+                    errors.whatsappNumber ? "border-error-500" : "border-gray-300 dark:border-gray-600"
+                  } bg-transparent px-4 text-sm text-gray-800 dark:text-white focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20`}
+                  placeholder="e.g. +12345678901"
+                />
+                {errors.whatsappNumber && (
+                  <p className="text-xs text-error-500 mt-1">{errors.whatsappNumber.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Password <span className="text-error-500">*</span>
                 </label>
                 <input
@@ -178,4 +204,3 @@ export default function CreateAdmin() {
     </>
   );
 }
-
