@@ -6,6 +6,7 @@ import { useSocket } from "../../context/SocketContext";
 import FeedbackBadge from "../../components/ui/badge/FeedbackBadge";
 import CommonPagination from '../../components/common/CommonPagination';
 import {IPagination} from "../../types/common.ts";
+import TruncatedPopover from '../../components/common/TruncatedPopover';
 
 const FeedbackList: React.FC = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
@@ -43,7 +44,9 @@ const FeedbackList: React.FC = () => {
   }, [socket, fetchFeedbacks]);
 
   const formatDate = (dateString: string) => {
-    return dateString ? new Date(dateString).toLocaleString() : "-";
+    if (!dateString) return "-";
+    const date = new Date(dateString);
+    return date.toLocaleDateString(); // Only show date, not time
   };
 
   const handlePageChange = (page: number) => {
@@ -66,22 +69,24 @@ const FeedbackList: React.FC = () => {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200 dark:border-gray-700">
-                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Guest Number</th>
-                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Message</th>
-                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Feedback</th>
-                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Note</th>
-                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Resolved At</th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400 whitespace-normal break-words">Guest Number</th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400 whitespace-normal break-words">Message</th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400 whitespace-normal break-words">Feedback</th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400 whitespace-normal break-words">Replay</th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400 whitespace-normal break-words">Note</th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400 whitespace-normal break-words">Resolved At</th>
                 <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Actions</th>
               </tr>
             </thead>
             <tbody>
               {messages.map((fb) => (
                 <tr key={fb.id} className="border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                  <td className="py-3 px-4">{fb.guestNumber}</td>
-                  <td className="py-3 px-4">{fb.prompt}</td>
-                  <td className="py-3 px-4"><FeedbackBadge feedback={fb.feedback} /></td>
-                  <td className="py-3 px-4">{fb.feedbackNote || '-'}</td>
-                  <td className="py-3 px-4">{fb.feedbackResolvedAt && formatDate(fb.feedbackResolvedAt)}</td>
+                  <td className="py-3 px-4 whitespace-normal break-words">{fb.guestNumber}</td>
+                  <td className="py-3 px-4 whitespace-normal break-words"><TruncatedPopover text={fb.prompt} limit={12} className="cursor-pointer" /></td>
+                  <td className="py-3 px-4 whitespace-normal break-words"><FeedbackBadge feedback={fb.feedback} /></td>
+                  <td className="py-3 px-4 whitespace-normal break-words"><TruncatedPopover text={fb.reply || ''} limit={12} className="cursor-pointer" /></td>
+                  <td className="py-3 px-4 whitespace-normal break-words"><TruncatedPopover text={fb.feedbackNote || ''} limit={12} className="cursor-pointer" /></td>
+                  <td className="py-3 px-4 whitespace-normal break-words">{fb.feedbackResolvedAt && formatDate(fb.feedbackResolvedAt)}</td>
                   <td className="py-3 px-4">
                     {fb.feedback === "negative" && !fb.feedbackResolvedAt && (
                       <button

@@ -123,8 +123,7 @@ export default function HostBookingsPage() {
                                             </TableCell>
                                             <TableCell className="px-6 py-4 text-right">
                                                 {booking.commission ? (
-                                                    <div className="text-sm font-medium text-error-600">
-                                                        - {formatCurrency(booking.commission.amount)}
+                                                    <div className="text-sm font-medium text-success-600">{formatCurrency(booking.commission.amount)}
                                                     </div>
                                                 ) : (
                                                     <span className="text-xs text-gray-400">N/A</span>

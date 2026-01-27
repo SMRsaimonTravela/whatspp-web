@@ -128,7 +128,7 @@ export const adminService = {
   },
 
   updateSetting: async (key: string, value: number | string | boolean): Promise<{ success: boolean; data: Setting }> => {
-    const response = await api.put(`/admin/settings/${key}`, { value });
+    const response = await api.patch(`/admin/settings/${key}`, { value });
     return response.data;
   },
 

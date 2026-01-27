@@ -60,17 +60,16 @@ export default function Settings() {
     }
   };
 
-  const formatValue = (value: number | string | boolean, key: string) => {
-    if (typeof value === 'number' && key.includes('timeout')) {
-      const seconds = value / 1000;
-      if (seconds >= 3600) {
-        return `${(seconds / 3600).toFixed(1)} hours`;
-      } else if (seconds >= 60) {
-        return `${(seconds / 60).toFixed(0)} minutes`;
-      }
-      return `${seconds} seconds`;
+  const formatValue = (value: number | string | boolean) => {
+    if (typeof value !== 'number') {
+      return value;
     }
-    return String(value);
+    const seconds = value / 1000;
+    if (seconds >= 60) {
+      const minutes = +(seconds / 60).toFixed(1);
+      return `${minutes} minutes`;
+    }
+    return `${Math.round(seconds)} seconds`;
   };
 
   const groupedSettings = settings.reduce((acc, setting) => {
@@ -139,7 +138,7 @@ export default function Settings() {
                         {setting.description}
                       </p>
                       <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                        Current: {formatValue(setting.value, setting.key)}
+                        Current: {formatValue(Number(setting.value))}
                       </p>
                     </div>
                     <div className="flex items-center gap-3">
