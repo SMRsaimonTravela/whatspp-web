@@ -34,7 +34,7 @@ const BookingTable: React.FC<BookingTableProps> = ({
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">{title}</h1>
       </div>
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden px-3">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden p-4">
         {/* Dynamic Filters */}
         {filters && Object.keys(filters).length > 0 && onFilterChange && (
           <DynamicFilter
