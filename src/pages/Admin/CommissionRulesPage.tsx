@@ -12,6 +12,7 @@ import {Controller, useForm} from "react-hook-form";
 import {Dropdown} from "../../components/ui/dropdown/Dropdown";
 import {DropdownItem} from "../../components/ui/dropdown/DropdownItem";
 import Switch from "../../components/form/switch/Switch";
+import Badge from "../../components/ui/badge/Badge";
 
 export default function CommissionRulesPage() {
     const [rules, setRules] = useState<ICommissionRule[]>([] as ICommissionRule[]);
@@ -227,6 +228,7 @@ export default function CommissionRulesPage() {
                                         <TableCell isHeader className="px-6 py-4 dark:text-gray-200">Rule Name</TableCell>
                                         <TableCell isHeader className="px-6 py-4 dark:text-gray-200">Scope</TableCell>
                                         <TableCell isHeader className="px-6 py-4 dark:text-gray-200">Rate</TableCell>
+                                        <TableCell isHeader className="px-6 py-4 dark:text-gray-200">Created</TableCell>
                                         <TableCell isHeader className="px-6 py-4 dark:text-gray-200">Created By</TableCell>
                                         <TableCell isHeader className="px-6 py-4 dark:text-gray-200">Assigned Users</TableCell>
                                         <TableCell isHeader className="px-6 py-4 text-center dark:text-gray-200">Status</TableCell>
@@ -240,8 +242,15 @@ export default function CommissionRulesPage() {
                                             <TableCell className="px-6 py-4">
                                                 <div className="text-sm text-gray-900 dark:text-white">{rule.name}</div>
                                             </TableCell>
-                                            <TableCell className="px-6 py-4 capitalize text-sm text-gray-600 dark:text-gray-400">{rule.scope}</TableCell>
-                                            <TableCell className="px-6 py-4 text-gray-900 dark:text-white text-sm">{rule.type === 'percentage' ? `${rule.value}%` : `৳${rule.value}`}</TableCell>
+                                            <TableCell className="px-6 py-4">
+                                                <Badge color={rule.scope === 'global' ? 'primary' : 'warning'} size="sm">{rule.scope}</Badge>
+                                            </TableCell>
+                                            <TableCell className="px-6 py-4">
+                                                <Badge color={rule.type === 'percentage' ? 'success' : 'warning'} size="sm">{rule.type === 'percentage' ? `${rule.value}%` : `৳${rule.value}`}</Badge>
+                                            </TableCell>
+                                            <TableCell className="px-6 py-4">
+                                                <Badge color="primary" size="sm">{new Date(rule.createdAt).toLocaleDateString()}</Badge>
+                                            </TableCell>
                                             <TableCell className="px-6 py-4 text-sm">
                                                 <div className="text-gray-900 dark:text-white">{rule.user?.email}</div>
                                             </TableCell>

@@ -1,9 +1,13 @@
 import type {  IAssignedUser } from "./users.type.ts";
 
+export type CommissionScope = 'global' | 'host';
+export type CommissionType = 'percentage' | 'fixed';
+export type CommissionStatus = 'active' | 'inactive';
+
 export interface ICommissionRule {
   id: string;
   name: string;
-  scope: string;
+  scope: CommissionScope;
   userId: string;
   user: {
     id: string;
@@ -11,11 +15,11 @@ export interface ICommissionRule {
     email: string;
     userType: string;
   };
-  type: string;
+  type: CommissionType;
   value: number;
   maxAmount: number;
   priority: number;
-  status: string;
+  status: CommissionStatus;
   assignedUsers: IAssignedUser[];
   createdAt: string;
   updatedAt: string;
