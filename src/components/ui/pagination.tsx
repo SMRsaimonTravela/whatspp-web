@@ -4,9 +4,10 @@ import {
   ChevronRightIcon,
   MoreHorizontalIcon,
 } from "lucide-react"
+import { Button } from "./button"
 
 import { cn } from "../../lib/utils"
-import { buttonVariants } from "../ui/button"
+import { buttonVariants } from "./button"
 
 function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
   return (
@@ -67,12 +68,13 @@ function PaginationLink({
 
 function PaginationPrevious({
   className,
+  size,
   ...props
 }: React.ComponentProps<typeof PaginationLink>) {
   return (
     <PaginationLink
       aria-label="Go to previous page"
-      size="default"
+      size={size || "default"}
       className={cn("gap-1 px-2.5 sm:pl-2.5", className)}
       {...props}
     >
@@ -84,12 +86,13 @@ function PaginationPrevious({
 
 function PaginationNext({
   className,
+  size,
   ...props
 }: React.ComponentProps<typeof PaginationLink>) {
   return (
     <PaginationLink
       aria-label="Go to next page"
-      size="default"
+      size={size || "default"}
       className={cn("gap-1 px-2.5 sm:pr-2.5", className)}
       {...props}
     >

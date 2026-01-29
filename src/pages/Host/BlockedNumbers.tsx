@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import PageMeta from "../../components/common/PageMeta";
+import CommonPagination from "../../components/common/CommonPagination";
 import { hostService } from "../../services/hostService";
-import type { BlockedNumber, Pagination } from "../../types";
+import type { BlockedNumber, IPagination } from "../../types";
 import { Modal } from "../../components/ui/modal";
 import ConfirmationModal from "../../components/ui/ConfirmationModal";
 import toast from "react-hot-toast";
 
 export default function BlockedNumbers() {
   const [blockedNumbers, setBlockedNumbers] = useState<BlockedNumber[]>([]);
-  const [pagination, setPagination] = useState<Pagination | null>(null);
+  const [pagination, setPagination] = useState<IPagination | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("");
@@ -244,29 +245,7 @@ export default function BlockedNumbers() {
           )}
 
           {/* Pagination */}
-          {pagination && pagination.totalPages > 1 && (
-            <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Page {currentPage} of {pagination.totalPages}
-              </p>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setCurrentPage(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-sm disabled:opacity-50"
-                >
-                  Previous
-                </button>
-                <button
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                  disabled={currentPage === pagination.totalPages}
-                  className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-sm disabled:opacity-50"
-                >
-                  Next
-                </button>
-              </div>
-            </div>
-          )}
+          {pagination && <CommonPagination pagination={pagination} onPageChange={setCurrentPage} />}
         </div>
       </div>
 

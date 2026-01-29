@@ -210,10 +210,10 @@ export default function Messages() {
           )}
 
           {/* Pagination */}
-          {pagination && pagination.totalPages > 1 && (
+          {pagination && pagination.last_page > 1 && (
             <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Showing {((currentPage - 1) * pagination.limit) + 1} to {Math.min(currentPage * pagination.limit, pagination.total)} of {pagination.total} messages
+                Showing {((currentPage - 1) * pagination.per_page) + 1} to {Math.min(currentPage * pagination.per_page, pagination.total)} of {pagination.total} messages
               </p>
               <div className="flex items-center gap-2">
                 <button
@@ -224,11 +224,11 @@ export default function Messages() {
                   Previous
                 </button>
                 <span className="text-sm text-gray-700 dark:text-gray-300">
-                  Page {currentPage} of {pagination.totalPages}
+                  Page {currentPage} of {pagination.last_page}
                 </span>
                 <button
                   onClick={() => setCurrentPage(currentPage + 1)}
-                  disabled={currentPage === pagination.totalPages}
+                  disabled={currentPage === pagination.last_page}
                   className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   Next

@@ -1,6 +1,8 @@
 // User Types
-import { IPagination } from "./common.ts";
 import { IHostUser } from "./users.type.ts";
+import { IPagination } from "./common.ts";
+
+export type { IPagination };
 
 export interface IUser {
   id: string;
@@ -228,6 +230,7 @@ export interface IMessage {
   userId: string;
   guestId: string;
   guestNumber: string;
+  guestName?: string;
   prompt: string;
   reply?: string;
   messageType: string;

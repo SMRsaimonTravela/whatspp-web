@@ -1,5 +1,5 @@
 import api from './api';
-import { WhatsAppStatus } from '../constants/whatsapp';
+import { WhatsAppStatus, WhatsAppStatusValue } from '../constants/whatsapp';
 import {ISessionsResponse, ISessionStatus} from "../types/session";
 
 export interface WhatsAppStatus {

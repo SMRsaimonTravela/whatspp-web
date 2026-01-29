@@ -1,15 +1,15 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { User } from '../types';
+import type { IUser } from '../types';
 
 interface AuthState {
-  user: User | null;
+  user: IUser | null;
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (token: string, user: User) => void;
+  login: (token: string, user: IUser) => void;
   logout: () => void;
-  updateUser: (user: Partial<User>) => void;
+  updateUser: (user: Partial<IUser>) => void;
   setLoading: (loading: boolean) => void;
 }
 
@@ -21,7 +21,7 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isLoading: true,
 
-      login: (token: string, user: User) => {
+      login: (token: string, user: IUser) => {
         localStorage.setItem('token', token);
         set({ token, user, isAuthenticated: true, isLoading: false });
       },
@@ -31,7 +31,7 @@ export const useAuthStore = create<AuthState>()(
         set({ token: null, user: null, isAuthenticated: false, isLoading: false });
       },
 
-      updateUser: (userData: Partial<User>) => {
+      updateUser: (userData: Partial<IUser>) => {
         set((state) => ({
           user: state.user ? { ...state.user, ...userData } : null,
         }));
@@ -47,4 +47,3 @@ export const useAuthStore = create<AuthState>()(
     }
   )
 );
-

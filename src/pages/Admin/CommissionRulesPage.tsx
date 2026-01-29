@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import PageMeta from "../../components/common/PageMeta";
 import {financeService} from "../../services/financeService";
 import {adminService} from "../../services/adminService";
-import {ICommissionRule} from "../../types/commission.ts";
+import {ICommissionRule, CommissionScope, CommissionType, CommissionStatus} from "../../types/commission.ts";
 import {IAssignedUser, IHostUser} from "../../types/users.type";
 import {Table, TableBody, TableCell, TableHeader, TableRow} from "../../components/ui/table";
 import {Modal} from "../../components/ui/modal";
@@ -13,6 +13,17 @@ import {Dropdown} from "../../components/ui/dropdown/Dropdown";
 import {DropdownItem} from "../../components/ui/dropdown/DropdownItem";
 import Switch from "../../components/form/switch/Switch";
 import Badge from "../../components/ui/badge/Badge";
+
+type CommissionFormData = {
+    name: string;
+    scope: CommissionScope;
+    type: CommissionType;
+    value: number;
+    maxAmount: number;
+    priority: number;
+    status: CommissionStatus;
+    assignedUsers: string[];
+};
 
 export default function CommissionRulesPage() {
     const [rules, setRules] = useState<ICommissionRule[]>([] as ICommissionRule[]);
@@ -76,7 +87,7 @@ export default function CommissionRulesPage() {
         reset,
         watch,
         formState: {errors}
-    } = useForm({
+    } = useForm<CommissionFormData>({
         defaultValues: {
             name: "",
             scope: "global",
@@ -96,29 +107,28 @@ export default function CommissionRulesPage() {
                 name: form.name || "",
                 scope: form.scope || "global",
                 type: form.type || "percentage",
-                value: typeof form.value === 'number' ? form.value : Number(form.value) || 0,
-                maxAmount: typeof form.maxAmount === 'number' ? form.maxAmount : Number(form.maxAmount) || 0,
-                priority: typeof form.priority === 'number' ? form.priority : Number(form.priority) || 0,
+                value: form.value || 0,
+                maxAmount: form.maxAmount || 0,
+                priority: form.priority || 0,
                 status: form.status || "active",
                 assignedUsers: form.assignedUsers?.map((u: IAssignedUser) => u.id) || [],
             });
         }
     }, [isModalOpen, form, reset]);
 
-    const onSubmit = async (data: Partial<ICommissionRule>) => {
-        const payload = {
+    const onSubmit = async (data: CommissionFormData) => {
+        const payload: Omit<Partial<ICommissionRule>, 'assignedUsers'> = {
             ...data,
-            value: typeof data.value === 'number' ? data.value : Number(data.value) || 0,
-            maxAmount: typeof data.maxAmount === 'number' ? data.maxAmount : Number(data.maxAmount) || 0,
-            priority: typeof data.priority === 'number' ? data.priority : Number(data.priority) || 0,
         };
         setIsSubmitting(true);
         try {
             if (form.id) {
                 // Update: only send changed fields except status/assignedUsers
                 const updatePayload: Partial<ICommissionRule> = {};
-                ["name", "scope", "type", "value", "priority", "maxAmount"].forEach(key => {
-                    if ((payload as any)[key] !== (form as any)[key]) (updatePayload as any)[key] = (payload as any)[key];
+                const keys: (keyof Omit<Partial<ICommissionRule>, 'assignedUsers'>)[] = ["name", "scope", "type", "value", "priority", "maxAmount"];
+                keys.forEach(key => {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    if (payload[key] !== form[key]) (updatePayload as any)[key] = payload[key];
                 });
                 if (Object.keys(updatePayload).length > 0) {
                     await financeService.updateCommissionRule(form.id, updatePayload);
@@ -132,8 +142,8 @@ export default function CommissionRulesPage() {
                 };
                 const created  = await financeService.createCommissionRule(createPayload);
                 // Assign users if any selected
-                if (data.assignedUsers && data.assignedUsers.length > 0 && created?.id) {
-                    await financeService.assignCommissionRuleUsers(created.id, data.assignedUsers.map(x=>x.id));
+                if (data.assignedUsers && data.assignedUsers.length > 0 && created) {
+                    await financeService.assignCommissionRuleUsers(created.id, data.assignedUsers);
                 }
                 toast.success("Rule created");
             }
@@ -170,7 +180,7 @@ export default function CommissionRulesPage() {
             setAssignModal({open: false, ruleId: null});
             setSelectedAssignUsers([]);
             loadRules();
-        } catch (e) {
+        } catch {
             toast.error("Failed to assign users");
         } finally {
             setAssigning(false);
@@ -524,7 +534,7 @@ export default function CommissionRulesPage() {
                         <div className="flex gap-3 pt-4">
                             <button
                                 type="button"
-                                onClick={rhfHandleSubmit(onSubmit)}
+                                onClick={() => rhfHandleSubmit(onSubmit)()}
                                 disabled={isSubmitting}
                                 className="flex-1 h-12 bg-brand-500 text-white rounded-xl font-semibold hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-brand-500/20 active:scale-95"
                             >

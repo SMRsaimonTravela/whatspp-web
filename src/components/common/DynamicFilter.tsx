@@ -130,7 +130,7 @@ const DynamicFilter: React.FC<DynamicFilterProps> = ({ filters, values, onChange
                     <label className="text-sm font-medium">{filter.label}</label>
                     <MultiSelect
                         options={options}
-                        value={localValues[filter.name] || []}
+                        value={(localValues[filter.name] as (string | number | boolean)[]) || []}
                         onChange={(val) => handleChange(filter.name, val)}
                         placeholder={filter.placeholder}
                         className="min-w-[220px] w-full"
@@ -145,7 +145,7 @@ const DynamicFilter: React.FC<DynamicFilterProps> = ({ filters, values, onChange
                   <div key={filter.name} className="flex flex-col gap-2 min-w-[220px] w-full">
                     <label className="text-sm font-medium">{filter.label}</label>
                     <RadioGroup
-                        value={localValues[filter.name] || ""}
+                        value={(localValues[filter.name] as string) || ""}
                         onValueChange={(val) => handleChange(filter.name, val)}
                         className="flex gap-4"
                     >
@@ -186,7 +186,7 @@ const DynamicFilter: React.FC<DynamicFilterProps> = ({ filters, values, onChange
                   <div key={filter.name} className="flex flex-col gap-2 min-w-[220px] w-full">
                     <label className="text-sm font-medium">{filter.label}</label>
                     <Select
-                        value={localValues[filter.name] || ""}
+                        value={(localValues[filter.name] as string) || ""}
                         onValueChange={(val) => handleChange(filter.name, val)}
                     >
                       <SelectTrigger className="min-w-[220px] w-full">
@@ -226,7 +226,7 @@ const DynamicFilter: React.FC<DynamicFilterProps> = ({ filters, values, onChange
                     <label className="text-sm font-medium">{filter.label}</label>
                     <input
                         type="number"
-                        value={localValues[filter.name] || ""}
+                        value={(localValues[filter.name] as string) || ""}
                         onChange={(e) =>
                             handleChange(
                                 filter.name,
@@ -247,7 +247,7 @@ const DynamicFilter: React.FC<DynamicFilterProps> = ({ filters, values, onChange
                     <label className="text-sm font-medium">{filter.label}</label>
                     <input
                         type="text"
-                        value={localValues[filter.name] || ""}
+                        value={(localValues[filter.name] as string) || ""}
                         onChange={(e) => handleChange(filter.name, e.target.value)}
                         placeholder={filter.placeholder}
                         className="border rounded px-3 py-2 min-w-[220px] w-full"

@@ -33,6 +33,7 @@ export interface IWalletLedger {
 
 export interface IWithdrawalRequest {
     id: string;
+    _id?: string;
     hostId: number;
     userId: string;
     user: IHostUser;
