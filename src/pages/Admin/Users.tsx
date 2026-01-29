@@ -225,7 +225,7 @@ export default function Users() {
                             onClick={() => setIsCreateModalOpen(true)}
                             className="px-4 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600"
                         >
-                            Create User
+                            Create Host User
                         </button>
                     </div>
 
