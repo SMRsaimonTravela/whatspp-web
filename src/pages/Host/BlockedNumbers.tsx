@@ -140,8 +140,9 @@ export default function BlockedNumbers() {
             </h1>
             <div className="flex gap-2">
               <button
+                disabled={true}
                 onClick={() => setIsBulkModalOpen(true)}
-                className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent dark:disabled:hover:bg-transparent"
               >
                 Bulk Import
               </button>
