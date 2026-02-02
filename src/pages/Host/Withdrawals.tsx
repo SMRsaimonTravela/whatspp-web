@@ -22,7 +22,7 @@ export default function Withdrawals() {
       const res: IWithdrawalsResponse = await financeService.getWithdrawals(currentPage, PAGE_SIZE);
       setWithdrawals(res.data);
       setTotalPages(res.pagination.last_page);
-    } catch (_error) {
+    } catch {
       toast.error("Failed to load withdrawals");
     } finally {
       setIsLoading(false);
@@ -46,16 +46,16 @@ export default function Withdrawals() {
             <Table>
               <TableHeader className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
                 <TableRow>
-                  <TableCell isHeader className="px-6 py-4">Date</TableCell>
-                  <TableCell isHeader className="px-6 py-4">Amount</TableCell>
-                  <TableCell isHeader className="px-6 py-4">Status</TableCell>
-                  <TableCell isHeader className="px-6 py-4">Note</TableCell>
+                  <TableCell isHeader className="px-6 text-left py-4">Date</TableCell>
+                  <TableCell isHeader className="px-6 text-left py-4">Amount</TableCell>
+                  <TableCell isHeader className="px-6 text-left py-4">Status</TableCell>
+                  <TableCell isHeader className="px-6 text-left py-4">Note</TableCell>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {withdrawals.map((item) => (
                   <TableRow key={item._id} className="border-b border-gray-100 dark:border-gray-700/50 last:border-0">
-                    <TableCell className="px-6 py-4 text-sm whitespace-nowrap text-gray-600 dark:text-gray-400">
+                    <TableCell className="px-6  py-4 text-sm whitespace-nowrap text-gray-600 dark:text-gray-400">
                       {new Date(item.createdAt).toLocaleString()}
                     </TableCell>
                     <TableCell className="px-6 py-4 text-sm font-semibold text-gray-800 dark:text-gray-200">

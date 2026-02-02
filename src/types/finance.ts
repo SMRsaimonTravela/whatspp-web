@@ -1,6 +1,7 @@
 // Enums
 
 import { IHostUser } from "./users.type.ts";
+import {IBooking} from "./booking";
 
 export type WithdrawalStatus = 'pending' | 'approved' | 'complete' | 'rejected';
 export type PaymentStatus = 'unpaid' | 'paid' | 'refunded';
@@ -113,6 +114,20 @@ export interface IWithdrawalsResponse {
     pagination: IPagination;
 }
 
+export interface INonWithdrawableSummary {
+    total_locked_amount: number;
+    currency: string;
+    booking_count: number;
+}
+
+export interface INonWithdrawableBookingsResponse {
+    success: boolean;
+    message: string;
+    data: {
+        summary: INonWithdrawableSummary;
+        bookings: IBooking[];
+    };
+}
 
 // API Responses
 export interface IHostFinancialDetails {

@@ -56,9 +56,9 @@ const BookingTable: React.FC<BookingTableProps> = ({
             <Table>
               <TableHeader className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
                 <TableRow>
-                  <TableCell isHeader className="px-6 py-4">Booking</TableCell>
+                  <TableCell isHeader className="px-6 py-4 text-left">Booking</TableCell>
                   <TableCell isHeader className="px-6 py-4">Guest Info</TableCell>
-                  <TableCell isHeader className="px-6 py-4 text-right">Amount</TableCell>
+                  <TableCell isHeader className="px-6 py-4 text-center">Amount</TableCell>
                   <TableCell isHeader className="px-6 py-4 text-center">Status</TableCell>
                   <TableCell isHeader className="px-6 py-4 text-right">Commission</TableCell>
                   <TableCell isHeader className="px-6 py-4">Date</TableCell>
@@ -99,7 +99,6 @@ const BookingTable: React.FC<BookingTableProps> = ({
                       {formatCurrency(booking.amount)}
                     </TableCell>
                     <TableCell className="px-6  text-center py-4 text-center">
-                      <span className="flex items-center justify-start">
                         <Badge color={
                           booking.paymentStatus === 'paid' ? 'success' :
                           booking.paymentStatus === 'unpaid' ? 'warning' :
@@ -108,16 +107,15 @@ const BookingTable: React.FC<BookingTableProps> = ({
                           {booking.paymentStatus === 'paid' ? 'Paid' :
                             booking.paymentStatus === 'unpaid' ? 'Unpaid' :
                             booking.paymentStatus === 'refunded' ? 'Refunded' : 'Pending'}</Badge>
-                      </span>
                     </TableCell>
                     <TableCell className="px-6 py-4 text-right">
                       {booking.commission && typeof booking.commission.amount === 'number' ? (
-                        <div className="text-sm font-medium text-success-600">{formatCurrency(booking.commission.amount)}</div>
+                        <div className="text-sm font-medium text-success-600">+{formatCurrency(booking.commission.amount)}</div>
                       ) : (
                         <span className="text-xs text-gray-400">N/A</span>
                       )}
                     </TableCell>
-                    <TableCell className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                    <TableCell className="px-6 py-4 text-sm text-right text-gray-500 dark:text-gray-400">
                       {formatFDate(booking.createdAt)}
                     </TableCell>
                   </TableRow>

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import PageMeta from "../../components/common/PageMeta";
 import { financeService } from "../../services/financeService";
-import { IWallet, IWalletTransaction, IWalletHistoryResponse } from "../../types/finance";
+import { IWallet, IWalletTransaction, IWalletHistoryResponse, INonWithdrawableSummary } from "../../types/finance";
+import { IBooking } from "../../types/booking";
 import { Table, TableHeader, TableBody, TableRow, TableCell } from "../../components/ui/table";
 import { Modal } from "../../components/ui/modal";
 import toast from "react-hot-toast";
@@ -17,6 +18,11 @@ export default function HostWalletPage() {
     const [withdrawNote, setWithdrawNote] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // Non-withdrawable bookings state
+    const [lockedSummary, setLockedSummary] = useState<INonWithdrawableSummary | null>(null);
+    const [lockedBookings, setLockedBookings] = useState<IBooking[]>([]);
+    const [isLoadingLocked, setIsLoadingLocked] = useState(false);
+
     // Fetch wallet only once on mount
     useEffect(() => {
         const fetchWallet = async () => {
@@ -25,12 +31,26 @@ export default function HostWalletPage() {
                 const walletRes: IWallet = await financeService.getHostWallet();
                 setWallet(walletRes);
                 fetchHistory(1);
-            } catch (error) {
+                fetchLockedBookings(); // Fetch locked bookings on page load
+            } catch {
                 setIsLoading(false);
             }
         };
         fetchWallet();
     }, []);
+
+    const fetchLockedBookings = async () => {
+        setIsLoadingLocked(true);
+        try {
+            const res = await financeService.getNonWithdrawableBookings();
+            setLockedSummary(res.data.summary);
+            setLockedBookings(res.data.bookings);
+        } catch {
+            // Silent fail
+        } finally {
+            setIsLoadingLocked(false);
+        }
+    };
 
     // Fetch history for a given page (no walletId)
     const fetchHistory = async (page: number) => {
@@ -39,7 +59,7 @@ export default function HostWalletPage() {
             const historyRes: IWalletHistoryResponse = await financeService.getHostWalletHistory(page);
             setHistory(historyRes.data);
             setTotalPages(historyRes.pagination.last_page);
-        } catch (error) {
+        } catch {
             // No error toast or console for GET
         } finally {
             setIsLoading(false);
@@ -52,14 +72,19 @@ export default function HostWalletPage() {
         fetchHistory(page);
     };
 
+    // Calculate available withdrawal amount
+    const availableWithdrawAmount = wallet
+        ? Number(wallet.balance) - (lockedSummary?.total_locked_amount || 0)
+        : 0;
+
     const handleWithdrawRequest = async () => {
         const amount = parseFloat(withdrawAmount);
         if (isNaN(amount) || amount <= 0) {
             toast.error("Please enter a valid amount");
             return;
         }
-        if (wallet && parseFloat(withdrawAmount) > Number(wallet.balance)) {
-            toast.error("Insufficient balance");
+        if (amount > availableWithdrawAmount) {
+            toast.error("Amount exceeds available withdrawal balance");
             return;
         }
 
@@ -119,13 +144,16 @@ export default function HostWalletPage() {
                         <h3 className="text-3xl font-bold text-gray-800 dark:text-white">
                             {wallet ? formatCurrency(Number(wallet.balance)) : '৳0.00'}
                         </h3>
-                        <div className="mt-2 flex items-center text-xs text-success-500 font-medium">
-                            <span className="px-2 py-0.5 rounded-full bg-success-50 dark:bg-success-500/10">Withdrawal Available</span>
+                        <div className="mt-2 flex items-center justify-between">
+                            <span className="text-xs text-success-500 font-medium px-2 py-0.5 rounded-full bg-success-50 dark:bg-success-500/10">Withdrawal Available</span>
+                            <span className="text-sm font-semibold text-success-600 dark:text-success-400">
+                                {formatCurrency(Math.max(0, availableWithdrawAmount))}
+                            </span>
                         </div>
                     </div>
 
                     <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
-                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Pending Clearance</p>
+                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Withdrawal Pending</p>
                         <h3 className="text-3xl font-bold text-gray-800 dark:text-white">
                             {wallet ? formatCurrency(Number(wallet.totalPending)) : '৳0.00'}
                         </h3>
@@ -224,54 +252,118 @@ export default function HostWalletPage() {
             </div>
 
             {/* Withdrawal Modal */}
-            <Modal isOpen={isWithdrawModalOpen} onClose={() => setIsWithdrawModalOpen(false)} className="max-w-md p-0">
-                <div className="px-6 py-5 border-b border-gray-100 dark:border-gray-700">
+            <Modal isOpen={isWithdrawModalOpen} onClose={() => setIsWithdrawModalOpen(false)} className="max-w-lg p-0">
+                <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
                     <h2 className="text-xl font-bold text-gray-800 dark:text-white">Request Withdrawal</h2>
                 </div>
-                <div className="p-6 space-y-4">
-                    <div className="bg-brand-50 dark:bg-brand-500/10 p-4 rounded-xl border border-brand-100 dark:border-brand-500/20">
-                        <p className="text-xs text-brand-600 dark:text-brand-400 uppercase font-semibold tracking-wider mb-1">Maximum Available</p>
-                        <p className="text-2xl font-bold text-brand-700 dark:text-brand-300">{wallet ? formatCurrency(Number(wallet.balance)) : '৳0.00'}</p>
-                    </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Amount (BDT)</label>
-                        <div className="relative">
-                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">৳</span>
-                            <input
-                                type="number"
-                                value={withdrawAmount}
-                                onChange={(e) => setWithdrawAmount(e.target.value)}
-                                placeholder="0.00"
-                                className="w-full h-12 rounded-xl border border-gray-200 dark:border-gray-600 bg-transparent pl-8 pr-4 text-gray-800 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
+                {/* Scrollable Content Area */}
+                <div className="max-h-[60vh] overflow-y-auto custom-scrollbar">
+                    <div className="p-6 space-y-4">
+                        {/* Balance Summary */}
+                        <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl space-y-3">
+                            <div className="flex justify-between items-center">
+                                <span className="text-sm text-gray-600 dark:text-gray-400">Total Balance</span>
+                                <span className="text-lg font-semibold text-gray-800 dark:text-white">
+                                    {wallet ? formatCurrency(Number(wallet.balance)) : '৳0.00'}
+                                </span>
+                            </div>
+                            {lockedSummary && lockedSummary.total_locked_amount > 0 && (
+                                <div className="flex justify-between items-center text-orange-600 dark:text-orange-400">
+                                    <span className="text-sm">Locked Amount ({lockedSummary.booking_count} bookings)</span>
+                                    <span className="text-lg font-semibold">
+                                        - {formatCurrency(lockedSummary.total_locked_amount)}
+                                    </span>
+                                </div>
+                            )}
+                            <div className="border-t border-gray-200 dark:border-gray-600 pt-3 flex justify-between items-center">
+                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Available for Withdrawal</span>
+                                <span className="text-xl font-bold text-brand-600 dark:text-brand-400">
+                                    {formatCurrency(Math.max(0, availableWithdrawAmount))}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Amount (BDT)</label>
+                            <div className="relative">
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">৳</span>
+                                <input
+                                    type="number"
+                                    value={withdrawAmount}
+                                    onChange={(e) => setWithdrawAmount(e.target.value)}
+                                    placeholder="0.00"
+                                    max={availableWithdrawAmount}
+                                    className="w-full h-12 rounded-xl border border-gray-200 dark:border-gray-600 bg-transparent pl-8 pr-4 text-gray-800 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Notes (Optional)</label>
+                            <textarea
+                                value={withdrawNote}
+                                onChange={(e) => setWithdrawNote(e.target.value)}
+                                placeholder="e.g. Bank Account details if not set"
+                                rows={2}
+                                className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-transparent px-4 py-3 text-sm text-gray-800 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all resize-none"
                             />
                         </div>
-                    </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Notes (Optional)</label>
-                        <textarea
-                            value={withdrawNote}
-                            onChange={(e) => setWithdrawNote(e.target.value)}
-                            placeholder="e.g. Bank Account details if not set"
-                            rows={3}
-                            className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-transparent px-4 py-3 text-sm text-gray-800 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
-                        />
-                    </div>
+                        {/* Locked Bookings List */}
+                        {lockedBookings.length > 0 && (
+                            <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+                                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                                    Locked Bookings
+                                </h3>
+                                <div className="space-y-2">
+                                    {lockedBookings.map((booking) => (
+                                        <div
+                                            key={booking.id}
+                                            className="flex justify-between items-center p-3 bg-orange-50 dark:bg-orange-500/10 rounded-lg border border-orange-100 dark:border-orange-500/20"
+                                        >
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                                                    #{booking.bookingId} · {booking.guestName}
+                                                </p>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                    Withdrawable after <span className="font-semibold text-orange-600 dark:text-orange-400">{new Date(booking.checkOut).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                                                </p>
+                                            </div>
+                                            <div className="text-right ml-3">
+                                                <p className="text-sm font-semibold text-orange-600 dark:text-orange-400">
+                                                    {formatCurrency(booking.commission?.amount || 0)}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
-                    <div className="pt-2 flex flex-col gap-3">
-                        <button
-                            onClick={handleWithdrawRequest}
-                            disabled={isSubmitting}
-                            className="w-full h-12 bg-brand-500 text-white rounded-xl font-semibold hover:bg-brand-600 transition-all shadow-lg shadow-brand-500/20 active:scale-95 disabled:opacity-50"
-                        >
-                            {isSubmitting ? "Processing..." : "Submit Request"}
-                        </button>
+                        {isLoadingLocked && (
+                            <div className="flex justify-center py-4">
+                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-500"></div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Fixed Bottom Buttons */}
+                <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800">
+                    <div className="flex gap-3">
                         <button
                             onClick={() => setIsWithdrawModalOpen(false)}
-                            className="w-full h-12 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all active:scale-95"
+                            className="flex-1 h-11 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all active:scale-95"
                         >
                             Cancel
+                        </button>
+                        <button
+                            onClick={handleWithdrawRequest}
+                            disabled={isSubmitting || availableWithdrawAmount <= 0}
+                            className="flex-1 h-11 bg-brand-500 text-white rounded-xl font-semibold hover:bg-brand-600 transition-all shadow-lg shadow-brand-500/20 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-brand-500 disabled:active:scale-100"
+                        >
+                            {isSubmitting ? "Processing..." : "Submit Request"}
                         </button>
                     </div>
                 </div>

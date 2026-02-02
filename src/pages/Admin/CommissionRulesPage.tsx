@@ -140,7 +140,7 @@ export default function CommissionRulesPage() {
                     ...payload,
                     assignedUsers: undefined,
                 };
-                const created  = await financeService.createCommissionRule(createPayload);
+                const created = await financeService.createCommissionRule(createPayload);
                 // Assign users if any selected
                 if (data.assignedUsers && data.assignedUsers.length > 0 && created) {
                     await financeService.assignCommissionRuleUsers(created.id, data.assignedUsers);

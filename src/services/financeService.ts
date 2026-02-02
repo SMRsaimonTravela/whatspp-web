@@ -4,7 +4,7 @@ import {
     IHostFinancialDetails,
     IWalletLedger,
     IWallet,
-    IWalletHistoryResponse, IWithdrawalsResponse
+    IWalletHistoryResponse, IWithdrawalsResponse, INonWithdrawableBookingsResponse
 } from '../types/finance';
 import {ICommissionRule} from "../types/commission.ts";
 import {IBookingResponse} from "../types/booking";
@@ -71,6 +71,12 @@ export const requestWithdrawal = async (amount: number, note?: string): Promise<
 /** Get withdrawals (paginated) */
 export const getWithdrawals = async (page = 1, limit = 20): Promise<IWithdrawalsResponse> => {
     const res = await api.get('/host/wallet/withdrawals', { params: { page, limit } });
+    return res.data;
+};
+
+/** Get host's non-withdrawable bookings (locked amount) */
+export const getNonWithdrawableBookings = async (): Promise<INonWithdrawableBookingsResponse> => {
+    const res = await api.get('/host/bookings/not-withdrawable');
     return res.data;
 };
 
@@ -162,5 +168,6 @@ export const financeService = {
     getWithdrawals,
     updateCommissionRule,
     updateCommissionRuleStatus,
-    assignCommissionRuleUsers
-};
+    assignCommissionRuleUsers,
+    getNonWithdrawableBookings
+}
