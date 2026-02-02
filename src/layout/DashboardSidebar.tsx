@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
-import { ChevronDownIcon, GridIcon, HorizontaLDots } from "../icons";
+import { ChevronDownIcon, GridIcon, HorizontaLDots, DocsIcon } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 import { InfoIcon } from "../icons";
 
@@ -55,6 +55,11 @@ const hostNavItems: NavItem[] = [
     path: "/host/blocked-numbers",
   },
   {
+    icon: <DocsIcon />,
+    name: "Question Bank",
+    path: "/host/question-bank",
+  },
+  {
     icon: (
       <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -74,9 +79,9 @@ const hostNavItems: NavItem[] = [
   },
   {
     icon: (
-        <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-        </svg>
+      <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+      </svg>
     ),
     name: "Withdrawals",
     path: "/host/withdrawals",
@@ -101,9 +106,9 @@ const adminNavItems: NavItem[] = [
   },
   {
     icon: (
-        <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-        </svg>
+      <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+      </svg>
     ),
     name: "Bookings",
     path: "/admin/bookings",
@@ -132,6 +137,11 @@ const adminNavItems: NavItem[] = [
     ),
     name: "Block Requests",
     path: "/admin/block-requests",
+  },
+  {
+    icon: <DocsIcon />,
+    name: "Question Bank",
+    path: "/admin/question-bank",
   },
   {
     icon: (
@@ -186,9 +196,9 @@ const adminNavItems: NavItem[] = [
   },
   {
     icon: (
-        <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-        </svg>
+      <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+      </svg>
     ),
     name: "Profile",
     path: "/admin/profile",
@@ -276,8 +286,8 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ variant = 'host' }) => {
             <button
               onClick={() => handleSubmenuToggle(index, menuType)}
               className={`menu-item group ${openSubmenu?.type === menuType && openSubmenu?.index === index
-                  ? "menu-item-active"
-                  : "menu-item-inactive"
+                ? "menu-item-active"
+                : "menu-item-inactive"
                 } cursor-pointer ${!isExpanded && !isHovered
                   ? "lg:justify-center"
                   : "lg:justify-start"
@@ -285,8 +295,8 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ variant = 'host' }) => {
             >
               <span
                 className={`${openSubmenu?.type === menuType && openSubmenu?.index === index
-                    ? "menu-item-icon-active"
-                    : "menu-item-icon-inactive"
+                  ? "menu-item-icon-active"
+                  : "menu-item-icon-inactive"
                   }`}
               >
                 {nav.icon}
@@ -297,9 +307,9 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ variant = 'host' }) => {
               {(isExpanded || isHovered || isMobileOpen) && (
                 <ChevronDownIcon
                   className={`ml-auto w-5 h-5 transition-transform duration-200 ${openSubmenu?.type === menuType &&
-                      openSubmenu?.index === index
-                      ? "rotate-180 text-brand-500"
-                      : ""
+                    openSubmenu?.index === index
+                    ? "rotate-180 text-brand-500"
+                    : ""
                     }`}
                 />
               )}
@@ -313,8 +323,8 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ variant = 'host' }) => {
               >
                 <span
                   className={`${isActive(nav.path)
-                      ? "menu-item-icon-active"
-                      : "menu-item-icon-inactive"
+                    ? "menu-item-icon-active"
+                    : "menu-item-icon-inactive"
                     }`}
                 >
                   {nav.icon}
@@ -344,8 +354,8 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ variant = 'host' }) => {
                     <Link
                       to={subItem.path}
                       className={`menu-dropdown-item ${isActive(subItem.path)
-                          ? "menu-dropdown-item-active"
-                          : "menu-dropdown-item-inactive"
+                        ? "menu-dropdown-item-active"
+                        : "menu-dropdown-item-inactive"
                         }`}
                     >
                       {subItem.name}
@@ -353,8 +363,8 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ variant = 'host' }) => {
                         {subItem.new && (
                           <span
                             className={`ml-auto ${isActive(subItem.path)
-                                ? "menu-dropdown-badge-active"
-                                : "menu-dropdown-badge-inactive"
+                              ? "menu-dropdown-badge-active"
+                              : "menu-dropdown-badge-inactive"
                               } menu-dropdown-badge`}
                           >
                             new
@@ -363,8 +373,8 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ variant = 'host' }) => {
                         {subItem.pro && (
                           <span
                             className={`ml-auto ${isActive(subItem.path)
-                                ? "menu-dropdown-badge-active"
-                                : "menu-dropdown-badge-inactive"
+                              ? "menu-dropdown-badge-active"
+                              : "menu-dropdown-badge-inactive"
                               } menu-dropdown-badge`}
                           >
                             pro
@@ -420,8 +430,8 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ variant = 'host' }) => {
             <div>
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                    ? "lg:justify-center"
-                    : "justify-start"
+                  ? "lg:justify-center"
+                  : "justify-start"
                   }`}
               >
                 {isExpanded || isHovered || isMobileOpen ? (
