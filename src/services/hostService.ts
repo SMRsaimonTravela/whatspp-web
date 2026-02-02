@@ -1,5 +1,5 @@
 import api from './api';
-import {MessageStats, BlockedNumber, IMessage, IGuest, IAnalyticsApiResponse} from '../types';
+import { MessageStats, BlockedNumber, IMessage, IGuest, IAnalyticsApiResponse } from '../types';
 import { IPagination } from '../types/common';
 
 // Session APIs
@@ -118,6 +118,86 @@ export const hostService = {
 
   checkIfBlocked: async (phoneNumber: string): Promise<{ success: boolean; data: { isBlocked: boolean } }> => {
     const response = await api.get(`/host/blocked-numbers/check/${phoneNumber}`);
+    return response.data;
+  },
+
+  // Question Bank - Categories
+  getQuestionBankCategories: async (params?: {
+    search?: string;
+    isActive?: 'true' | 'false';
+    page?: number;
+    limit?: number;
+  }) => {
+    const response = await api.get('/host/question-bank/categories', { params });
+    return response.data;
+  },
+
+  createQuestionBankCategory: async (data: { name: string }) => {
+    const response = await api.post('/host/question-bank/categories', data);
+    return response.data;
+  },
+
+  updateQuestionBankCategory: async (id: string, data: { name: string }) => {
+    const response = await api.patch(`/host/question-bank/categories/${id}`, data);
+    return response.data;
+  },
+
+  deleteQuestionBankCategory: async (id: string) => {
+    const response = await api.delete(`/host/question-bank/categories/${id}`);
+    return response.data;
+  },
+
+  toggleQuestionBankCategoryActive: async (id: string) => {
+    const response = await api.patch(`/host/question-bank/categories/${id}/active`);
+    return response.data;
+  },
+
+  // Question Bank - Questions
+  getQuestionBankQuestions: async (params?: {
+    search?: string;
+    status?: string;
+    isActive?: 'true' | 'false';
+    categoryId?: string;
+    page?: number;
+    limit?: number;
+  }) => {
+    const response = await api.get('/host/question-bank/questions', { params });
+    return response.data;
+  },
+
+  createQuestionBankQuestion: async (data: {
+    question: string;
+    answer: string;
+    categoryIds: string[];
+  }) => {
+    const response = await api.post('/host/question-bank/questions', data);
+    return response.data;
+  },
+
+  updateQuestionBankQuestion: async (
+    id: string,
+    data: {
+      question?: string;
+      answer?: string;
+      categoryIds?: string[];
+    }
+  ) => {
+    const response = await api.patch(`/host/question-bank/questions/${id}`, data);
+    return response.data;
+  },
+
+  deleteQuestionBankQuestion: async (id: string) => {
+    const response = await api.delete(`/host/question-bank/questions/${id}`);
+    return response.data;
+  },
+
+  toggleQuestionBankQuestionActive: async (id: string) => {
+    const response = await api.patch(`/host/question-bank/questions/${id}/active`);
+    return response.data;
+  },
+
+  getApprovedQuestions: async () => {
+    const response = await api.get('/host/question-bank/approved');
     return response.data;
   },
 };

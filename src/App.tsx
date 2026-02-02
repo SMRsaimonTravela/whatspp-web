@@ -20,6 +20,7 @@ import Guests from "./pages/Host/Guests";
 import BlockedNumbers from "./pages/Host/BlockedNumbers";
 import HostProfile from "./pages/Host/Profile";
 import Withdrawals from "./pages/Host/Withdrawals";
+import HostQuestionBankPage from "./pages/Host/QuestionBankPage";
 
 // Admin Pages
 import AdminDashboard from "./pages/Admin/Dashboard";
@@ -33,6 +34,7 @@ import HostDetail from "./pages/Admin/HostDetail";
 import FeedbackList from "./pages/Admin/FeedbackList";
 import WithdrawalsPage from "./pages/Admin/WithdrawalsPage";
 import CommissionRulesPage from "./pages/Admin/CommissionRulesPage";
+import AdminQuestionBankPage from "./pages/Admin/QuestionBankPage";
 
 // Financial Host Pages
 import HostWalletPage from "./pages/Host/HostWalletPage";
@@ -68,6 +70,7 @@ export default function App() {
             <Route path="/host/conversation" element={<Conversation />} />
             <Route path="/host/guests" element={<Guests />} />
             <Route path="/host/blocked-numbers" element={<BlockedNumbers />} />
+            <Route path="/host/question-bank" element={<HostQuestionBankPage />} />
             <Route path="/host/profile" element={<HostProfile />} />
             <Route path="/host/wallet" element={<HostWalletPage />} />
             <Route path="/host/bookings" element={<HostBookingsPage />} />
@@ -84,13 +87,14 @@ export default function App() {
             }
           >
             <Route index path="/admin" element={<AdminDashboard />} />
-            <Route path={"/admin/bookings"}  element={<AdminBookings />} />
+            <Route path={"/admin/bookings"} element={<AdminBookings />} />
             <Route path="/admin/users" element={<Users />} />
             {/*/admin/profile*/}
             <Route path="/admin/profile" element={<HostProfile />} />
             <Route path="/admin/users/pending" element={<PendingApprovals />} />
-            <Route path="/admin/host-users" element={<HostUsersPage/>} />
+            <Route path="/admin/host-users" element={<HostUsersPage />} />
             <Route path="/admin/block-requests" element={<BlockRequests />} />
+            <Route path="/admin/question-bank" element={<AdminQuestionBankPage />} />
             <Route path="/admin/sessions" element={<Sessions />} />
             <Route path="/admin/settings" element={<Settings />} />
             <Route path="/admin/hosts/:hostId" element={<HostDetail />} />
