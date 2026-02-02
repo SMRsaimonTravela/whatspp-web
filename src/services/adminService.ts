@@ -57,7 +57,7 @@ export const adminService = {
     return response.data;
   },
 
-  createAdmin: async (data: { name?: string; email: string; password: string; whatsappNumber:string }): Promise<{ success: boolean; data: IUser }> => {
+  createAdmin: async (data: { name?: string; email: string; password: string; whatsappNumber: string }): Promise<{ success: boolean; data: IUser }> => {
     const response = await api.post('/admin/users/admin', data);
     return response.data;
   },
@@ -185,6 +185,89 @@ export const adminService = {
 
   addFeedback: async (userId: string, messageId: string, feedback: 'positive' | 'negative' | 'neutral', feedbackNote?: string): Promise<{ success: boolean }> => {
     const response = await api.patch(`/admin/${userId}/messages/${messageId}/feedback`, { feedback, feedbackNote });
+    return response.data;
+  },
+
+  // Question Bank - Categories
+  getQuestionBankCategories: async (params?: {
+    search?: string;
+    isActive?: 'true' | 'false';
+    userId?: string;
+    page?: number;
+    limit?: number;
+  }) => {
+    const response = await api.get('/admin/question-bank/categories', { params });
+    return response.data;
+  },
+
+  createQuestionBankCategory: async (data: { name: string; userId: string }) => {
+    const response = await api.post('/admin/question-bank/categories', data);
+    return response.data;
+  },
+
+  updateQuestionBankCategory: async (id: string, data: { name: string }) => {
+    const response = await api.patch(`/admin/question-bank/categories/${id}`, data);
+    return response.data;
+  },
+
+  deleteQuestionBankCategory: async (id: string) => {
+    const response = await api.delete(`/admin/question-bank/categories/${id}`);
+    return response.data;
+  },
+
+  toggleQuestionBankCategoryActive: async (id: string) => {
+    const response = await api.patch(`/admin/question-bank/categories/${id}/active`);
+    return response.data;
+  },
+
+  // Question Bank - Questions
+  getQuestionBankQuestions: async (params?: {
+    search?: string;
+    status?: string;
+    isActive?: 'true' | 'false';
+    userId?: string;
+    categoryId?: string;
+    page?: number;
+    limit?: number;
+  }) => {
+    const response = await api.get('/admin/question-bank/questions', { params });
+    return response.data;
+  },
+
+  createQuestionBankQuestion: async (data: {
+    question: string;
+    answer: string;
+    categoryIds: string[];
+    userId: string;
+  }) => {
+    const response = await api.post('/admin/question-bank/questions', data);
+    return response.data;
+  },
+
+  updateQuestionBankQuestion: async (
+    id: string,
+    data: {
+      question?: string;
+      answer?: string;
+      categoryIds?: string[];
+    }
+  ) => {
+    const response = await api.patch(`/admin/question-bank/questions/${id}`, data);
+    return response.data;
+  },
+
+  deleteQuestionBankQuestion: async (id: string) => {
+    const response = await api.delete(`/admin/question-bank/questions/${id}`);
+    return response.data;
+  },
+
+  toggleQuestionBankQuestionActive: async (id: string) => {
+    const response = await api.patch(`/admin/question-bank/questions/${id}/active`);
+    return response.data;
+  },
+
+  approveQuestionBankQuestion: async (id: string) => {
+    const response = await api.patch(`/admin/question-bank/questions/${id}/approve`);
     return response.data;
   },
 };
