@@ -913,3 +913,25 @@ span.flatpickr-weekday,
     @apply bg-background text-foreground;
   }
 }
+
+
+
+.dialog-content::-webkit-scrollbar {
+  width: 6px;
+}
+.dialog-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+.dialog-content::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 3px;
+}
+.dialog-content::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+}
+.dark .dialog-content::-webkit-scrollbar-thumb {
+  background-color: #64748b;
+}
+.dark .dialog-content::-webkit-scrollbar-thumb:hover {
+  background-color: #475569;
+}

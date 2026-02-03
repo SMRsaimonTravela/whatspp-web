@@ -4,6 +4,7 @@ import PageMeta from '../../components/common/PageMeta';
 import { adminService } from '../../services/adminService';
 import { QuestionAccordion } from '../../components/common/question-bank/QuestionAccordion';
 import { QuestionForm } from '../../components/common/question-bank/QuestionForm';
+import { ExampleQAModal } from '../../components/common/question-bank/ExampleQAModal';
 import DynamicFilter from '../../components/common/DynamicFilter';
 import CommonPagination from '../../components/common/CommonPagination';
 import {
@@ -23,6 +24,7 @@ export default function QuestionBankPage() {
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editingQuestion, setEditingQuestion] = useState<IQuestionAnswer | null>(null);
     const [selectedUserId, setSelectedUserId] = useState<string>('');
+    const [isExampleModalOpen, setIsExampleModalOpen] = useState(false);
 
     // Fetch Questions
     const {
@@ -228,15 +230,24 @@ export default function QuestionBankPage() {
                                 </p>
                             </div>
 
-                            {selectedUserId && (
+                            <div className="flex items-center gap-3">
                                 <button
-                                    onClick={handleCreateQuestion}
-                                    className="inline-flex items-center gap-2 px-4 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600 transition-colors"
+                                    onClick={() => setIsExampleModalOpen(true)}
+                                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                                 >
-                                    <Plus size={20} />
-                                    Add Question
+                                    Show Example Q&A
                                 </button>
-                            )}
+
+                                {selectedUserId && (
+                                    <button
+                                        onClick={handleCreateQuestion}
+                                        className="inline-flex items-center gap-2 px-4 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600 transition-colors"
+                                    >
+                                        <Plus size={20} />
+                                        Add Question
+                                    </button>
+                                )}
+                            </div>
                         </div>
 
                         {/* Global Host Selector */}
@@ -366,7 +377,7 @@ export default function QuestionBankPage() {
                 )}
             </div>
 
-            {/* Question Form Dialog - Context aware, simplified */}
+            {/* Question Form Dialog */}
             <QuestionForm
                 open={isFormOpen}
                 onOpenChange={setIsFormOpen}
@@ -378,6 +389,12 @@ export default function QuestionBankPage() {
                 onToggleCategoryActive={(id) => toggleCategoryActiveMutation.mutateAsync(id)}
                 editingQuestion={editingQuestion}
                 categoriesLoading={categoriesLoading}
+            />
+
+            {/* Example Q&A Modal */}
+            <ExampleQAModal
+                open={isExampleModalOpen}
+                onOpenChange={setIsExampleModalOpen}
             />
         </>
     );
