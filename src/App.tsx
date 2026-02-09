@@ -35,6 +35,7 @@ import FeedbackList from "./pages/Admin/FeedbackList";
 import WithdrawalsPage from "./pages/Admin/WithdrawalsPage";
 import CommissionRulesPage from "./pages/Admin/CommissionRulesPage";
 import AdminQuestionBankPage from "./pages/Admin/QuestionBankPage";
+import ManualBookingCreate from "./pages/Admin/ManualBookingCreate";
 
 // Financial Host Pages
 import HostWalletPage from "./pages/Host/HostWalletPage";
@@ -102,6 +103,7 @@ export default function App() {
             <Route path="/admin/feedback" element={<FeedbackList />} />
             <Route path="/admin/withdrawals" element={<WithdrawalsPage />} />
             <Route path="/admin/commission-rules" element={<CommissionRulesPage />} />
+            <Route path="/admin/manual-booking-create" element={<ManualBookingCreate />} />
           </Route>
 
           {/* Fallback Route */}
@@ -117,3 +119,4 @@ export default function App() {
     </SocketProvider>
   );
 }
+

@@ -270,6 +270,22 @@ export const adminService = {
     const response = await api.patch(`/admin/question-bank/questions/${id}/approve`);
     return response.data;
   },
+
+  createManualBooking: async (data: {
+    phone: string;
+    first_name: string;
+    last_name: string;
+    listing_id: number;
+    from: string;
+    to: string;
+    guests: number;
+    guest_id?: number | null;
+    birthdate?: string | null;
+    quantity?: number;
+  }): Promise<{ success: boolean; message: string; data: { paymentLink: string; originalUrl: string } }> => {
+    const response = await api.post('/admin/bookings/manual', data);
+    return response.data;
+  },
 };
 
 export const getAdminFeedbacks = async (params?: { page?: number; limit?: number }): Promise<IAdminFeedbacksResponse> => {

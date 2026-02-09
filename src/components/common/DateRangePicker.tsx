@@ -14,21 +14,14 @@ import { type DateRange } from "react-day-picker"
 export function DateRangePicker({
   label = "Date Picker Range",
   value,
-  onChange,
+  onSelect,
   className = "mx-auto w-60",
 }: {
   label?: string;
   value?: DateRange;
-  onChange?: (range: DateRange | undefined) => void;
+  onSelect?: (range: DateRange | undefined) => void;
   className?: string;
 }) {
-  const [date, setDate] = React.useState<DateRange | undefined>(value)
-
-  // Sync local state with value prop only when value changes
-  React.useEffect(() => {
-    setDate(value)
-  }, [value])
-
   return (
     <Field className={className}>
       <FieldLabel htmlFor="date-picker-range">{label}</FieldLabel>
@@ -36,14 +29,14 @@ export function DateRangePicker({
         <PopoverTrigger asChild>
           <Button variant="outline" id="date-picker-range" className="justify-start px-2.5 font-normal">
             <CalendarIcon data-icon="inline-start" />
-            {date?.from ? (
-              date.to ? (
+            {value?.from ? (
+              value.to ? (
                 <>
-                  {format(date.from, "LLL dd, y")} -{" "}
-                  {format(date.to, "LLL dd, y")}
+                  {format(value.from, "LLL dd, y")} -{" "}
+                  {format(value.to, "LLL dd, y")}
                 </>
               ) : (
-                format(date.from, "LLL dd, y")
+                format(value.from, "LLL dd, y")
               )
             ) : (
               <span>Pick a date</span>
@@ -53,13 +46,26 @@ export function DateRangePicker({
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
             mode="range"
-            defaultMonth={date?.from}
-            selected={date}
+            defaultMonth={value?.from}
+            selected={value}
             onSelect={range => {
-              setDate(range)
-              if (onChange) onChange(range)
+              if (value && value.from && value.to && range) {
+                if (range.from !== value.from) {
+                  // Clicked before current from, set new start
+                  onSelect({ from: range.from, to: undefined });
+                } else if (range.to && range.to > value.to) {
+                  // Clicked after current to, set new start
+                  onSelect({ from: range.to, to: undefined });
+                } else {
+                  // Clicked between or on to, set end
+                  onSelect(range);
+                }
+              } else {
+                onSelect(range);
+              }
             }}
             numberOfMonths={2}
+
           />
         </PopoverContent>
       </Popover>
