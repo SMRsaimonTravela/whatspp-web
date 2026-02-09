@@ -16,9 +16,9 @@ const manualBookingSchema = z.object({
   phone: z.string().min(1, "Phone number is required"),
   first_name: z.string().min(1, "First name is required"),
   last_name: z.string().min(1, "Last name is required"),
-  listing_id: z.preprocess((val) => (val === "" ? undefined : Number(val)), z.number().min(1, "Listing ID is required")),
-  guests: z.preprocess((val) => (val === "" ? undefined : Number(val)), z.number().min(1, "At least 1 guest is required")),
-  guest_id: z.preprocess((val) => (val === "" || val === null ? null : Number(val)), z.number().positive("Guest ID must be positive").nullable().optional()),
+  listing_id: z.string().min(1, "Listing ID is required"),
+  guests: z.string().min(1, "At least 1 guest is required"),
+  guest_id: z.string().optional(),
 });
 
 type ManualBookingFormData = z.infer<typeof manualBookingSchema>;
@@ -59,8 +59,17 @@ export default function ManualBookingCreate() {
       // Fix the checkout date issue by adding one day
       const toDate = format(new Date(dateRange.to.getTime() + 24 * 60 * 60 * 1000), "yyyy-MM-dd");
 
+      const transformedData = {
+        phone: data.phone,
+        first_name: data.first_name,
+        last_name: data.last_name,
+        listing_id: Number(data.listing_id),
+        guests: Number(data.guests),
+        guest_id: data.guest_id ? Number(data.guest_id) : null,
+      };
+
       const response = await adminService.createManualBooking({
-        ...data,
+        ...transformedData,
         quantity: 1,
         birthdate: null,
         from: fromDate,
@@ -87,7 +96,7 @@ export default function ManualBookingCreate() {
     try {
       await navigator.clipboard.writeText(text);
       toast.success("Link copied to clipboard");
-    } catch (error) {
+    } catch{
       toast.error("Failed to copy link");
     }
   };
@@ -245,7 +254,7 @@ export default function ManualBookingCreate() {
               </Button>
               <Button
                 type="submit"
-                variant="primary"
+                variant="default"
                 className="px-6 py-2.5 bg-brand-500 text-white rounded-xl font-medium hover:bg-brand-600 transition-all shadow-lg shadow-brand-500/20 active:scale-95"
                 disabled={isLoading}
               >

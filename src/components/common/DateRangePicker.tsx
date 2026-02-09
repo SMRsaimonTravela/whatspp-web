@@ -1,4 +1,3 @@
-import * as React from "react"
 import { Button } from "../ui/button"
 import { Calendar } from "../ui/calendar"
 import { Field, FieldLabel } from "../ui/field"
@@ -52,16 +51,16 @@ export function DateRangePicker({
               if (value && value.from && value.to && range) {
                 if (range.from !== value.from) {
                   // Clicked before current from, set new start
-                  onSelect({ from: range.from, to: undefined });
+                  if (onSelect) onSelect({ from: range.from, to: undefined });
                 } else if (range.to && range.to > value.to) {
                   // Clicked after current to, set new start
-                  onSelect({ from: range.to, to: undefined });
+                  if (onSelect) onSelect({ from: range.to, to: undefined });
                 } else {
                   // Clicked between or on to, set end
-                  onSelect(range);
+                  if (onSelect) onSelect(range);
                 }
               } else {
-                onSelect(range);
+                if (onSelect) onSelect(range);
               }
             }}
             numberOfMonths={2}

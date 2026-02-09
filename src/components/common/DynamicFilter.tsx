@@ -7,6 +7,7 @@ import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { adminService } from "../../services/adminService";
 import { useQueries, UseQueryResult } from "@tanstack/react-query";
 import { ICommonFilters } from "../../types/filters";
+import { format } from "date-fns";
 
 interface DynamicFilterProps {
   filters: ICommonFilters;
@@ -264,8 +265,10 @@ const DynamicFilter: React.FC<DynamicFilterProps> = ({ filters, values, onChange
                     to: "",
                   };
               const pickerValue =
-                  val.from && val.to
-                      ? { from: new Date(val.from), to: new Date(val.to) }
+                  val.from
+                      ? val.to
+                          ? { from: new Date(val.from), to: new Date(val.to) }
+                          : { from: new Date(val.from) }
                       : undefined;
 
               return (
@@ -273,10 +276,10 @@ const DynamicFilter: React.FC<DynamicFilterProps> = ({ filters, values, onChange
                     <DateRangePicker
                         value={pickerValue}
                         label={filter.label}
-                        onChange={(range) => {
+                        onSelect={(range) => {
                           handleChange(filter.name, {
-                            from: range?.from ? range.from.toISOString().slice(0, 10) : "",
-                            to: range?.to ? range.to.toISOString().slice(0, 10) : "",
+                            from: range?.from ? format(range.from, 'yyyy-MM-dd') : "",
+                            to: range?.to ? format(range.to, 'yyyy-MM-dd') : "",
                           });
                         }}
                         className="min-w-[220px] w-full"
