@@ -139,11 +139,6 @@ const adminNavItems: NavItem[] = [
     path: "/admin/block-requests",
   },
   {
-    icon: <DocsIcon />,
-    name: "Question Bank",
-    path: "/admin/question-bank",
-  },
-  {
     icon: (
       <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -151,6 +146,11 @@ const adminNavItems: NavItem[] = [
     ),
     name: "Sessions",
     path: "/admin/sessions",
+  },
+  {
+    icon: <DocsIcon />,
+    name: "Question Bank",
+    path: "/admin/question-bank",
   },
   {
     icon: (
@@ -202,24 +202,6 @@ const adminNavItems: NavItem[] = [
     ),
     name: "Profile",
     path: "/admin/profile",
-  },
-  {
-    icon: (
-      <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-      </svg>
-    ),
-    name: "Withdrawals",
-    path: "/admin/withdrawals",
-  },
-  {
-    icon: (
-      <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-      </svg>
-    ),
-    name: "Bookings",
-    path: "/admin/bookings",
   },
   {
     icon: (
