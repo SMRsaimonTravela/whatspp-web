@@ -140,17 +140,30 @@ const adminNavItems: NavItem[] = [
   },
   {
     icon: (
+        <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+    ),
+    name: "Withdrawals",
+    path: "/admin/withdrawals",
+  },
+  {
+    icon: (
+        <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" />
+        </svg>
+    ),
+    name: "Commission Rules",
+    path: "/admin/commission-rules",
+  },
+  {
+    icon: (
       <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
       </svg>
     ),
     name: "Sessions",
     path: "/admin/sessions",
-  },
-  {
-    icon: <DocsIcon />,
-    name: "Question Bank",
-    path: "/admin/question-bank",
   },
   {
     icon: (
@@ -164,21 +177,17 @@ const adminNavItems: NavItem[] = [
   },
   {
     icon: (
-      <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
+        <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
     ),
-    name: "Withdrawals",
-    path: "/admin/withdrawals",
+    name: "Profile",
+    path: "/admin/profile",
   },
   {
-    icon: (
-      <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" />
-      </svg>
-    ),
-    name: "Commission Rules",
-    path: "/admin/commission-rules",
+    icon: <DocsIcon />,
+    name: "Question Bank",
+    path: "/admin/question-bank",
   },
   {
     icon: (
@@ -193,15 +202,6 @@ const adminNavItems: NavItem[] = [
     icon: <InfoIcon />,
     name: "Feedback",
     path: "/admin/feedback",
-  },
-  {
-    icon: (
-      <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-      </svg>
-    ),
-    name: "Profile",
-    path: "/admin/profile",
   },
   {
     icon: (
