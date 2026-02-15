@@ -16,6 +16,7 @@ import {
   UserCircleIcon,
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
+import { useAuthStore } from "../store/authStore";
 
 type NavItem = {
   name: string;
@@ -94,6 +95,7 @@ const othersItems: NavItem[] = [
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const location = useLocation();
+  const user = useAuthStore((state) => state.user);
 
   const [openSubmenu, setOpenSubmenu] = useState<{
     type: "main" | "others";
@@ -282,6 +284,23 @@ const AppSidebar: React.FC = () => {
     </ul>
   );
 
+  // Check if user is admin and email contains 'support'
+  const isSupportAdmin = user?.role === "admin" && user?.email?.includes("support");
+
+  // Minimal menu for support admin
+  const supportAdminMenu = [
+    {
+      icon: <BoxCubeIcon />, // You can replace with Plus icon if available
+      name: "Manual Booking Create",
+      path: "/admin/manual-booking-create",
+    },
+    {
+      icon: <UserCircleIcon />,
+      name: "User Profile",
+      path: "/profile",
+    },
+  ];
+
   return (
     <aside
       className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200 
@@ -347,7 +366,25 @@ const AppSidebar: React.FC = () => {
                   <HorizontaLDots className="size-6" />
                 )}
               </h2>
-              {renderMenuItems(navItems, "main")}
+              {isSupportAdmin ? (
+                <ul className="flex flex-col gap-4">
+                  {supportAdminMenu.map((nav) => (
+                    <li key={nav.name}>
+                      <Link
+                        to={nav.path}
+                        className={`menu-item group ${isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"}`}
+                      >
+                        <span className="menu-item-icon-size menu-item-icon-inactive">{nav.icon}</span>
+                        {(isExpanded || isHovered || isMobileOpen) && (
+                          <span className="menu-item-text">{nav.name}</span>
+                        )}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                renderMenuItems(navItems, "main")
+              )}
             </div>
             <div className="">
               <h2
