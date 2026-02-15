@@ -285,7 +285,7 @@ const AppSidebar: React.FC = () => {
   );
 
   // Check if user is admin and email contains 'support'
-  const isSupportAdmin = user?.role === "admin" && user?.email?.includes("support");
+  const isSupportAdmin = user?.userType === "admin" && user?.email?.includes("support");
 
   // Minimal menu for support admin
   const supportAdminMenu = [
