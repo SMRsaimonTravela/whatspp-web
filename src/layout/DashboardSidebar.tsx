@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router";
 import { ChevronDownIcon, GridIcon, HorizontaLDots, DocsIcon } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 import { InfoIcon } from "../icons";
+import { useAuthStore } from "../store/authStore";
 
 type NavItem = {
   name: string;
@@ -221,8 +222,21 @@ interface AppSidebarProps {
 const AppSidebar: React.FC<AppSidebarProps> = ({ variant = 'host' }) => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const location = useLocation();
+  const user = useAuthStore((state) => state.user);
 
-  const navItems = variant === 'admin' ? adminNavItems : hostNavItems;
+  let navItems = variant === 'admin' ? adminNavItems : hostNavItems;
+
+  // If user is admin and email contains 'support', only show Manual Booking Create and Profile
+  if (
+    variant === 'admin' &&
+    user?.email?.includes('support')
+  ) {
+    navItems = adminNavItems.filter(
+      (item) =>
+        item.name === 'Manual Booking Create' ||
+        item.name === 'Profile'
+    );
+  }
 
   const [openSubmenu, setOpenSubmenu] = useState<{
     type: "main" | "others";

@@ -10,6 +10,7 @@ import NotFound from "./pages/OtherPage/NotFound";
 // Layout
 import DashboardLayout from "./layout/DashboardLayout";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import SupportRoute from "./components/auth/SupportRoute";
 
 // Host Pages
 import HostDashboard from "./pages/Host/Dashboard";
@@ -83,7 +84,9 @@ export default function App() {
           <Route
             element={
               <ProtectedRoute allowedUserTypes={["admin"]}>
-                <DashboardLayout variant="admin" />
+                <SupportRoute>
+                  <DashboardLayout variant="admin" />
+                </SupportRoute>
               </ProtectedRoute>
             }
           >
@@ -119,4 +122,3 @@ export default function App() {
     </SocketProvider>
   );
 }
-
