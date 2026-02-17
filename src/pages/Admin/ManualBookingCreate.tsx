@@ -11,6 +11,7 @@ import { Label } from "../../components/ui/label";
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { Loader } from "lucide-react";
+import { useBlockedDates } from "../../hooks/useBlockedDates";
 
 const manualBookingSchema = z.object({
   phone: z.string().min(1, "Phone number is required"),
@@ -43,9 +44,21 @@ export default function ManualBookingCreate() {
     handleSubmit,
     formState: { errors },
     reset,
+    watch,
   } = useForm<ManualBookingFormData>({
     resolver: zodResolver(manualBookingSchema),
   });
+
+  // Watch listing_id field
+  const listingId = watch("listing_id");
+
+  // Use the custom hook to get blocked and checkout-only dates
+  const {
+    blockedDates,
+    checkoutOnlyDates,
+    loading: blockedDatesLoading,
+    error: blockedDatesError,
+  } = useBlockedDates(listingId);
 
   const onSubmit = async (data: ManualBookingFormData) => {
     if (!dateRange?.from || !dateRange?.to) {
@@ -233,11 +246,18 @@ export default function ManualBookingCreate() {
                 onSelect={(range) => setDateRange(range)}
                 value={dateRange}
                 className="w-full"
-                label=''
+                label=""
+                blockedDates={blockedDates}
+                checkoutOnlyDates={checkoutOnlyDates}
+                loading={blockedDatesLoading}
+                error={blockedDatesError}
+                bookingMode={true}
               />
-              {(!dateRange?.from || !dateRange?.to) && (
+              {blockedDatesLoading ? (
+                <p className="mt-1 text-sm text-gray-600">Fetching blocked dates...</p>
+              ) : (!dateRange?.from || !dateRange?.to) ? (
                 <p className="mt-1 text-sm text-red-600">Check-in and check-out dates are required</p>
-              )}
+              ) : null}
             </div>
 
             <div className="flex justify-end gap-4">

@@ -8,6 +8,7 @@ import { adminService } from "../../services/adminService";
 import { useQueries, UseQueryResult } from "@tanstack/react-query";
 import { ICommonFilters } from "../../types/filters";
 import { format } from "date-fns";
+import { DateRange } from "react-day-picker";
 
 interface DynamicFilterProps {
   filters: ICommonFilters;
@@ -88,8 +89,7 @@ const DynamicFilter: React.FC<DynamicFilterProps> = ({ filters, values, onChange
 
   externalFilterDefs.forEach((filter, idx) => {
     const query = externalQueries[idx] as UseQueryResult<{ data: ExternalOption[] }>;
-    const rawOptions = query.data?.data || [];
-    externalOptions[filter.name] = rawOptions;
+    externalOptions[filter.name] = query.data?.data || [];
     loadingExternal[filter.name] = query.isLoading;
   });
 
@@ -276,7 +276,7 @@ const DynamicFilter: React.FC<DynamicFilterProps> = ({ filters, values, onChange
                     <DateRangePicker
                         value={pickerValue}
                         label={filter.label}
-                        onSelect={(range) => {
+                        onSelect={(range: DateRange | undefined) => {
                           handleChange(filter.name, {
                             from: range?.from ? format(range.from, 'yyyy-MM-dd') : "",
                             to: range?.to ? format(range.to, 'yyyy-MM-dd') : "",
