@@ -9,13 +9,14 @@ function processBlockedDates(dates: BlockedDate[]): {
 } {
   if (!dates.length) return { blockedDates: [], checkoutOnlyDates: [] };
 
-  // Remove duplicate date entries (keep last occurrence)
+  // Remove duplicates (keep last occurrence)
   const uniqueDates = Array.from(
-    new Map(dates.map((d) => [d.date, d])).values()
+      new Map(dates.map((d) => [d.date, d])).values()
   );
-  // Sort ascending by date
+
+  // Sort ascending
   const sorted = [...uniqueDates].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
   );
 
   const blocked: BlockedDate[] = [];
@@ -26,42 +27,41 @@ function processBlockedDates(dates: BlockedDate[]): {
   for (let i = 0; i < sorted.length; i++) {
     const current = sorted[i];
     const prev = sorted[i - 1];
+
     const isConsecutive =
-      prev &&
-      new Date(current.date).getTime() - new Date(prev.date).getTime() ===
+        prev &&
+        new Date(current.date).getTime() - new Date(prev.date).getTime() ===
         24 * 60 * 60 * 1000;
 
     if (i === 0 || isConsecutive) {
       range.push(current);
     } else {
-      // Process previous range
-      if (range.length === 1) {
-        checkoutOnly.push(range[0].date);
-      } else if (range.length > 1) {
-        checkoutOnly.push(range[0].date);
-        // Middle dates (excluding first and last)
-        if (range.length > 2) {
-          blocked.push(...range.slice(1, -1));
-        }
-        // Last date is removed (not added anywhere)
-      }
+      processRange(range);
       range = [current];
     }
   }
 
-  // Handle last range
-  if (range.length === 1) {
-    checkoutOnly.push(range[0].date);
-  } else if (range.length > 1) {
-    checkoutOnly.push(range[0].date);
-    if (range.length > 2) {
-      blocked.push(...range.slice(1, -1));
+  // process last range
+  processRange(range);
+
+  function processRange(range: BlockedDate[]) {
+    if (range.length === 1) {
+      // single date → both blocked and checkout
+      checkoutOnly.push(range[0].date);
+      blocked.push(range[0]);
+      return;
     }
-    // Last date is removed
+
+    // first → checkout only
+    checkoutOnly.push(range[0].date);
+
+    // all remaining → blocked
+    blocked.push(...range.slice(1));
   }
 
   return { blockedDates: blocked, checkoutOnlyDates: checkoutOnly };
 }
+
 
 export function useBlockedDates(listingId: number | string) {
   const {
