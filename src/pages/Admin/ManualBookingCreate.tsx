@@ -138,14 +138,18 @@ export default function ManualBookingCreate() {
         "yyyy-MM-dd"
       );
 
+      const adults = Number(data.guests);
+      const children = Number(data.child ?? 0);
+      const infants = Number(data.infant ?? 0);
+
       const transformedData = {
         phone: data.phone,
         first_name: data.first_name,
         last_name: data.last_name,
         listing_id: Number(data.listing_id),
-        guests: Number(data.guests),
-        child: Number(data.child ?? 0),
-        infant: Number(data.infant ?? 0),
+        guests: adults + children + infants,
+        child: children,
+        infant: infants,
         guest_id: data.guest_id ? Number(data.guest_id) : null,
       };
 
