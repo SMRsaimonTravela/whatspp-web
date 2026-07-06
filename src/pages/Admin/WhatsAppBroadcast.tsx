@@ -132,8 +132,13 @@ export default function WhatsAppBroadcast() {
         error: null,
         hasQR: true,
       });
-      // Always (re)fetch the rendered PNG from the authenticated endpoint.
-      fetchQRBlob();
+      // Clear the current blob so the guarded effect fetches the fresh QR PNG
+      // exactly once. Do NOT call fetchQRBlob() directly here — the QR event can
+      // fire repeatedly and each fetch would trigger another, hammering the API.
+      setQrBlobUrl((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return null;
+      });
     };
 
     socket.on(SESSION_EVENTS.STATUS, onStatus);
@@ -142,7 +147,7 @@ export default function WhatsAppBroadcast() {
       socket.off(SESSION_EVENTS.STATUS, onStatus);
       socket.off(SESSION_EVENTS.QR, onQR);
     };
-  }, [socket, fetchQRBlob]);
+  }, [socket]);
 
   // ---- Socket: broadcast progress ----
   useEffect(() => {
