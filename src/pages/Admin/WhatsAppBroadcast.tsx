@@ -52,6 +52,7 @@ export default function WhatsAppBroadcast() {
   // ---- Compose state ----
   const [numbersText, setNumbersText] = useState("");
   const [message, setMessage] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
   const [isSending, setIsSending] = useState(false);
 
   // ---- History state ----
@@ -229,16 +230,17 @@ export default function WhatsAppBroadcast() {
       toast.error(`Maximum ${MAX_RECIPIENTS} numbers per broadcast`);
       return;
     }
-    if (!message.trim()) {
-      toast.error("Message cannot be empty");
+    if (!message.trim() && !imageUrl.trim()) {
+      toast.error("Add a message or an image URL");
       return;
     }
     setIsSending(true);
     try {
-      await whatsappService.sendBroadcast(parsedNumbers, message.trim());
+      await whatsappService.sendBroadcast(parsedNumbers, message.trim(), imageUrl.trim() || undefined);
       toast.success(`Broadcast queued for ${uniqueCount} recipient(s)`);
       setNumbersText("");
       setMessage("");
+      setImageUrl("");
       await loadCampaigns();
     } catch (err: any) {
       toast.error(err?.response?.data?.error || "Failed to queue broadcast");
@@ -343,14 +345,40 @@ export default function WhatsAppBroadcast() {
               </p>
             </div>
             <div className="flex flex-col">
-              <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">Message</label>
+              <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">
+                Message {imageUrl.trim() ? "(caption)" : ""}
+              </label>
               <textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                rows={10}
+                rows={6}
                 placeholder="Type the message to send to everyone..."
                 className="w-full flex-1 rounded-lg border border-gray-300 bg-white p-3 text-sm text-gray-800 focus:border-[#25D366] focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
               />
+              <label className="mt-3 mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">
+                Image URL <span className="font-normal text-gray-400">(optional)</span>
+              </label>
+              <input
+                type="url"
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+                placeholder="https://example.com/photo.jpg"
+                className="w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm text-gray-800 focus:border-[#25D366] focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              />
+              {imageUrl.trim() && (
+                <div className="mt-2 flex items-start gap-2">
+                  <img
+                    src={imageUrl.trim()}
+                    alt="preview"
+                    className="h-16 w-16 rounded-lg border border-gray-200 object-cover dark:border-gray-600"
+                    onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                    onLoad={(e) => { (e.currentTarget as HTMLImageElement).style.display = "block"; }}
+                  />
+                  <p className="text-xs text-gray-400">
+                    The image is sent as a photo with the message as its caption. Must be a public URL.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
           <div className="mt-4 flex items-center justify-between gap-4">
@@ -359,7 +387,7 @@ export default function WhatsAppBroadcast() {
             </p>
             <button
               onClick={handleSend}
-              disabled={isSending || !isConnected || uniqueCount === 0 || tooMany || !message.trim()}
+              disabled={isSending || !isConnected || uniqueCount === 0 || tooMany || (!message.trim() && !imageUrl.trim())}
               className="rounded-lg bg-[#25D366] px-6 py-2 text-sm font-medium text-white shadow-md transition-all hover:bg-[#128C7E] disabled:cursor-not-allowed disabled:bg-gray-300 dark:disabled:bg-gray-600"
             >
               {isSending ? "Queuing..." : "Send Broadcast"}
@@ -400,7 +428,7 @@ export default function WhatsAppBroadcast() {
                   return (
                     <tr key={c.id} className="border-b border-gray-100 dark:border-gray-700/50">
                       <td className="max-w-[220px] truncate py-3 pr-4 text-gray-800 dark:text-gray-200" title={c.message}>
-                        {c.message}
+                        {c.imageUrl ? "📷 " : ""}{c.message || (c.imageUrl ? "(image only)" : "")}
                       </td>
                       <td className="py-3 pr-4 text-gray-500 dark:text-gray-400">
                         {new Date(c.createdAt).toLocaleString()}
@@ -449,6 +477,14 @@ export default function WhatsAppBroadcast() {
             <div className="mb-4 flex items-start justify-between">
               <div>
                 <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Campaign detail</h3>
+                {selected.imageUrl && (
+                  <img
+                    src={selected.imageUrl}
+                    alt="campaign"
+                    className="mt-2 max-h-40 rounded-lg border border-gray-200 object-contain dark:border-gray-600"
+                    onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                  />
+                )}
                 <p className="mt-1 max-w-md text-sm text-gray-500 dark:text-gray-400">{selected.message}</p>
               </div>
               <button onClick={() => setSelected(null)} className="text-gray-400 hover:text-gray-600">

@@ -20,6 +20,7 @@ export interface IBroadcastRecipient {
 export interface IBroadcastCampaign {
     id: string;
     message: string;
+    imageUrl?: string | null;
     status: BroadcastCampaignStatus;
     totalRecipients: number;
     sentCount: number;

@@ -77,9 +77,12 @@ export const whatsappService = {
 
     sendBroadcast: async (
         numbers: string[],
-        message: string
+        message: string,
+        imageUrl?: string
     ): Promise<{ id: string; status: string; totalRecipients: number }> => {
-        const response = await api.post('/admin/whatsapp/broadcast', { numbers, message });
+        const payload: { numbers: string[]; message: string; imageUrl?: string } = { numbers, message };
+        if (imageUrl && imageUrl.trim()) payload.imageUrl = imageUrl.trim();
+        const response = await api.post('/admin/whatsapp/broadcast', payload);
         return response.data.data;
     },
 
