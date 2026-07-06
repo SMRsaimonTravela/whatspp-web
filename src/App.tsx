@@ -37,6 +37,7 @@ import WithdrawalsPage from "./pages/Admin/WithdrawalsPage";
 import CommissionRulesPage from "./pages/Admin/CommissionRulesPage";
 import AdminQuestionBankPage from "./pages/Admin/QuestionBankPage";
 import ManualBookingCreate from "./pages/Admin/ManualBookingCreate";
+import WhatsAppBroadcast from "./pages/Admin/WhatsAppBroadcast";
 
 // Financial Host Pages
 import HostWalletPage from "./pages/Host/HostWalletPage";
@@ -100,6 +101,7 @@ export default function App() {
             <Route path="/admin/block-requests" element={<BlockRequests />} />
             <Route path="/admin/question-bank" element={<AdminQuestionBankPage />} />
             <Route path="/admin/sessions" element={<Sessions />} />
+            <Route path="/admin/whatsapp-broadcast" element={<WhatsAppBroadcast />} />
             <Route path="/admin/settings" element={<Settings />} />
             <Route path="/admin/hosts/:hostId" element={<HostDetail />} />
             <Route path="/admin/create-admin" element={<CreateAdmin />} />

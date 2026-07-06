@@ -1,6 +1,7 @@
 import api from './api';
 import { WhatsAppStatus, WhatsAppStatusValue } from '../constants/whatsapp';
 import {ISessionsResponse, ISessionStatus} from "../types/session";
+import { IBroadcastCampaign } from "../types/broadcast";
 
 export interface WhatsAppStatus {
     sessionId: string;
@@ -49,7 +50,59 @@ export const whatsappService = {
     // Admin: Restart session
     restartSession: async (sessionId: string): Promise<void> => {
         await api.post(`/admin/whatsapp/sessions/${sessionId}/restart`);
-    }
+    },
+
+    // ===== Admin broadcast account (single global session, id fixed server-side) =====
+
+    createAdminBroadcastSession: async (): Promise<WhatsAppStatus> => {
+        const response = await api.post('/admin/whatsapp/broadcast-session');
+        return response.data.data as WhatsAppStatus;
+    },
+
+    getAdminBroadcastStatus: async (): Promise<WhatsAppStatus> => {
+        const response = await api.get('/admin/whatsapp/broadcast-session');
+        return response.data.data as WhatsAppStatus;
+    },
+
+    getAdminBroadcastQRBlob: async (): Promise<Blob> => {
+        const response = await api.get('/admin/whatsapp/broadcast-session/qr-image', { responseType: 'blob' });
+        return response.data;
+    },
+
+    disconnectAdminBroadcast: async (): Promise<void> => {
+        await api.delete('/admin/whatsapp/broadcast-session');
+    },
+
+    // ===== Bulk broadcast messages =====
+
+    sendBroadcast: async (
+        numbers: string[],
+        message: string
+    ): Promise<{ id: string; status: string; totalRecipients: number }> => {
+        const response = await api.post('/admin/whatsapp/broadcast', { numbers, message });
+        return response.data.data;
+    },
+
+    getBroadcasts: async (params?: { page?: number; limit?: number }): Promise<{
+        data: IBroadcastCampaign[];
+        pagination?: { total: number; page: number; limit: number };
+    }> => {
+        const response = await api.get('/admin/whatsapp/broadcasts', { params });
+        return response.data;
+    },
+
+    getBroadcast: async (id: string): Promise<IBroadcastCampaign> => {
+        const response = await api.get(`/admin/whatsapp/broadcast/${id}`);
+        return response.data.data as IBroadcastCampaign;
+    },
+
+    retryBroadcast: async (id: string): Promise<void> => {
+        await api.post(`/admin/whatsapp/broadcast/${id}/retry`);
+    },
+
+    retryRecipient: async (id: string, recipientId: string): Promise<void> => {
+        await api.post(`/admin/whatsapp/broadcast/${id}/recipients/${recipientId}/retry`);
+    },
 };
 
 export default whatsappService;

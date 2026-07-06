@@ -19,3 +19,7 @@ export const FEEDBACK_EVENTS = {
 export const NOTIFICATION_EVENTS = {
     GENERAL: 'notification',
 } as const;
+
+export const BROADCAST_EVENTS = {
+    PROGRESS: 'broadcast:progress',
+} as const;
